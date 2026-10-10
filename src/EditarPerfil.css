@@ -1,0 +1,579 @@
+/* =====================================================
+   EDITAR PERFIL — CONECTA-TEL
+   ===================================================== */
+
+.editar-perfil-page {
+  position: fixed;
+  inset: 0;
+
+  width: 100%;
+  height: 100dvh;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  z-index: 11000;
+
+  background:
+    radial-gradient(
+      circle at 82% 5%,
+      rgba(20, 145, 255, 0.08),
+      transparent 30%
+    ),
+    #020b14;
+
+  color: #f4f8fc;
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.editar-perfil-header {
+  width: min(1080px, calc(100% - 56px));
+
+  margin: 70px auto 55px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 40px;
+}
+
+
+.editar-eyebrow {
+  display: block;
+
+  margin-bottom: 14px;
+
+  color: #36a9e1;
+
+  font-size: 10px;
+
+  letter-spacing: 2.1px;
+}
+
+
+.editar-perfil-header h1 {
+  margin: 0;
+
+  font-family: "Space Grotesk", sans-serif;
+
+  font-size: clamp(42px, 5vw, 62px);
+
+  line-height: 1;
+
+  letter-spacing: -2.5px;
+
+  font-weight: 500;
+}
+
+
+.editar-perfil-header p {
+  max-width: 500px;
+
+  margin-top: 15px;
+
+  color: #7f95a8;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+}
+
+
+.editar-cancelar-top {
+  flex-shrink: 0;
+
+  padding: 10px 17px;
+
+  border: 1px solid rgba(54, 169, 225, 0.35);
+
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #b9ccda;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+
+.editar-cancelar-top:hover {
+  background: rgba(54, 169, 225, 0.08);
+
+  border-color: #36a9e1;
+
+  color: white;
+}
+
+
+/* =====================================================
+   FORMULARIO
+   ===================================================== */
+
+.editar-perfil-form {
+  width: min(1080px, calc(100% - 56px));
+
+  margin: 0 auto 80px;
+}
+
+
+/* =====================================================
+   SECCIONES
+   ===================================================== */
+
+.editar-section {
+  padding: 38px 0;
+
+  border-top:
+    1px solid rgba(80, 157, 204, 0.16);
+}
+
+
+.editar-section:last-of-type {
+  border-bottom:
+    1px solid rgba(80, 157, 204, 0.16);
+}
+
+
+.editar-section-title {
+  display: grid;
+
+  grid-template-columns: 55px 1fr;
+
+  gap: 15px;
+
+  margin-bottom: 30px;
+}
+
+
+.editar-section-title > span {
+  color: #36a9e1;
+
+  font-size: 11px;
+
+  letter-spacing: 1.5px;
+}
+
+
+.editar-section-title h2 {
+  margin: 0;
+
+  color: #e9f2f8;
+
+  font-family: "Space Grotesk", sans-serif;
+
+  font-size: 21px;
+
+  font-weight: 500;
+}
+
+
+.editar-section-title p {
+  margin-top: 6px;
+
+  color: #687e91;
+
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   GRID
+   ===================================================== */
+
+.editar-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 24px;
+}
+
+
+.editar-grid
+.editar-field:last-child:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+
+/* =====================================================
+   CAMPOS
+   ===================================================== */
+
+.editar-field {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+
+.editar-field label {
+  color: #8095a7;
+
+  font-size: 10px;
+
+  letter-spacing: 1.2px;
+
+  text-transform: uppercase;
+}
+
+
+.editar-field input,
+.editar-field textarea {
+  width: 100%;
+
+  padding: 14px 15px;
+
+  border: 1px solid rgba(83, 158, 201, 0.18);
+
+  border-radius: 8px;
+
+  outline: none;
+
+  background:
+    rgba(5, 19, 32, 0.82);
+
+  color: #eaf4fa;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+.editar-field input::placeholder,
+.editar-field textarea::placeholder {
+  color: #455d70;
+}
+
+
+.editar-field input:focus,
+.editar-field textarea:focus {
+  border-color:
+    rgba(54, 169, 225, 0.72);
+
+  background:
+    rgba(6, 23, 38, 0.95);
+
+  box-shadow:
+    0 0 0 3px rgba(54, 169, 225, 0.07);
+}
+
+
+.editar-field textarea {
+  resize: vertical;
+
+  min-height: 145px;
+
+  line-height: 1.65;
+}
+
+
+/* =====================================================
+   MENSAJES
+   ===================================================== */
+
+.editar-mensaje {
+  margin-top: 25px;
+
+  padding: 13px 16px;
+
+  border: 1px solid rgba(47, 210, 164, 0.2);
+
+  border-radius: 8px;
+
+  background:
+    rgba(47, 210, 164, 0.05);
+
+  color: #64dcb8;
+
+  font-size: 12px;
+}
+
+
+.editar-error {
+  margin-top: 25px;
+
+  padding: 13px 16px;
+
+  border: 1px solid rgba(255, 91, 91, 0.2);
+
+  border-radius: 8px;
+
+  background:
+    rgba(255, 91, 91, 0.05);
+
+  color: #ff9b9b;
+
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   BOTONES
+   ===================================================== */
+
+.editar-actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 30px;
+}
+
+
+.editar-btn-secundario,
+.editar-btn-principal {
+  padding: 12px 20px;
+
+  border-radius: 8px;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.editar-btn-secundario {
+  border:
+    1px solid rgba(83, 158, 201, 0.25);
+
+  background: transparent;
+
+  color: #91a7b8;
+}
+
+
+.editar-btn-secundario:hover:not(:disabled) {
+  border-color:
+    rgba(83, 158, 201, 0.55);
+
+  color: white;
+}
+
+
+.editar-btn-principal {
+  border: 1px solid rgba(54, 169, 225, 0.6);
+
+  background:
+    linear-gradient(
+      135deg,
+      #149edc,
+      #0877be
+    );
+
+  color: white;
+
+  box-shadow:
+    0 10px 30px rgba(0, 130, 210, 0.12);
+}
+
+
+.editar-btn-principal:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 14px 35px rgba(0, 150, 230, 0.2);
+}
+
+
+.editar-btn-secundario:disabled,
+.editar-btn-principal:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   TABLET
+   ===================================================== */
+
+@media (max-width: 800px) {
+
+  .editar-perfil-header {
+    width: calc(100% - 36px);
+
+    margin-top: 55px;
+
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 25px;
+  }
+
+
+  .editar-perfil-form {
+    width: calc(100% - 36px);
+  }
+
+}
+
+
+/* =====================================================
+   MÓVIL
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .editar-perfil-header {
+    width: calc(100% - 28px);
+
+    margin:
+      42px auto
+      40px;
+
+    gap: 20px;
+  }
+
+
+  .editar-eyebrow {
+    font-size: 9px;
+
+    letter-spacing: 1.6px;
+  }
+
+
+  .editar-perfil-header h1 {
+    font-size: 39px;
+
+    letter-spacing: -1.6px;
+  }
+
+
+  .editar-perfil-header p {
+    font-size: 12px;
+  }
+
+
+  .editar-cancelar-top {
+    padding:
+      9px 13px;
+
+    font-size: 11px;
+  }
+
+
+  .editar-perfil-form {
+    width: calc(100% - 28px);
+
+    margin-bottom: 45px;
+  }
+
+
+  .editar-section {
+    padding: 30px 0;
+  }
+
+
+  .editar-section-title {
+    grid-template-columns:
+      38px 1fr;
+
+    gap: 10px;
+
+    margin-bottom: 24px;
+  }
+
+
+  .editar-section-title h2 {
+    font-size: 18px;
+  }
+
+
+  .editar-section-title p {
+    font-size: 11px;
+
+    line-height: 1.5;
+  }
+
+
+  .editar-grid {
+    grid-template-columns: 1fr;
+
+    gap: 18px;
+  }
+
+
+  .editar-grid
+  .editar-field:last-child:nth-child(3) {
+    grid-column: auto;
+  }
+
+
+  .editar-field input,
+  .editar-field textarea {
+    padding:
+      13px 13px;
+
+    font-size: 12px;
+  }
+
+
+  .editar-actions {
+    flex-direction: column-reverse;
+
+    align-items: stretch;
+
+    margin-top: 25px;
+  }
+
+
+  .editar-btn-secundario,
+  .editar-btn-principal {
+    width: 100%;
+
+    padding:
+      13px 16px;
+  }
+
+}
+
+
+/* =====================================================
+   PANTALLAS PEQUEÑAS
+   ===================================================== */
+
+@media (max-width: 380px) {
+
+  .editar-perfil-header h1 {
+    font-size: 35px;
+  }
+
+}

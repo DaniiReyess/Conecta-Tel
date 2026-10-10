@@ -1,0 +1,2342 @@
+/* =====================================================
+   CONTENEDOR
+   ===================================================== */
+
+.egresados-admin {
+
+  width: 100%;
+
+  margin-top: 75px;
+
+  padding-bottom: 70px;
+
+}
+
+
+/* =====================================================
+   ENCABEZADO
+   ===================================================== */
+
+.egresados-admin-header {
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 40px;
+
+  padding-bottom: 30px;
+
+  border-bottom:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.17
+    );
+
+}
+
+
+.egresados-admin-label {
+
+  display: block;
+
+  margin-bottom: 12px;
+
+  color: #20a9ed;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+
+}
+
+
+.egresados-admin-header h2 {
+
+  margin: 0 0 8px;
+
+  color: #f1f7fc;
+
+  font-size: 27px;
+
+  font-weight: 600;
+
+}
+
+
+.egresados-admin-header p {
+
+  margin: 0;
+
+  color: #6f94b3;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+}
+
+
+.egresados-admin-total {
+
+  min-width: 100px;
+
+  text-align: right;
+
+}
+
+
+.egresados-admin-total span {
+
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #20a9ed;
+
+  font-size: 9px;
+
+  letter-spacing: 1.7px;
+
+  font-weight: 700;
+
+}
+
+
+.egresados-admin-total strong {
+
+  color: #eef7ff;
+
+  font-size: 32px;
+
+  font-weight: 500;
+
+}
+
+
+/* =====================================================
+   FILTROS
+   ===================================================== */
+
+.egresados-admin-filters {
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(260px, 1fr)
+    190px
+    190px
+    auto;
+
+  gap: 14px;
+
+  padding: 25px 0;
+
+  border-bottom:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.12
+    );
+
+}
+
+
+.egresados-search,
+.egresados-filter {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+}
+
+
+.egresados-search span,
+.egresados-filter span {
+
+  color: #4aa8d9;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+
+}
+
+
+.egresados-search input,
+.egresados-filter select {
+
+  width: 100%;
+
+  height: 43px;
+
+  box-sizing: border-box;
+
+  padding: 0 13px;
+
+  border:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.22
+    );
+
+  border-radius: 3px;
+
+  background:
+    rgba(
+      3,
+      16,
+      27,
+      0.8
+    );
+
+  color: #dceaf5;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  outline: none;
+
+}
+
+
+.egresados-search input::placeholder {
+
+  color: #4e6b82;
+
+}
+
+
+.egresados-search input:focus,
+.egresados-filter select:focus {
+
+  border-color:
+    rgba(
+      42,
+      170,
+      235,
+      0.7
+    );
+
+}
+
+
+.egresados-filter select {
+
+  cursor: pointer;
+
+}
+
+
+.egresados-clear {
+
+  align-self: end;
+
+  height: 43px;
+
+  padding: 0 18px;
+
+  border:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.25
+    );
+
+  border-radius: 3px;
+
+  background:
+    transparent;
+
+  color: #78a4c3;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
+
+}
+
+
+.egresados-clear:hover {
+
+  border-color:
+    #20a9ed;
+
+  color: #eaf7ff;
+
+  background:
+    rgba(
+      32,
+      169,
+      237,
+      0.06
+    );
+
+}
+
+
+/* =====================================================
+   ERROR
+   ===================================================== */
+
+.egresados-admin-error {
+
+  margin-top: 20px;
+
+  padding: 14px 17px;
+
+  border-left:
+    2px solid #20a9ed;
+
+  background:
+    rgba(
+      32,
+      169,
+      237,
+      0.05
+    );
+
+  color: #86a7bf;
+
+  font-size: 12px;
+
+}
+
+
+/* =====================================================
+   CARGANDO
+   ===================================================== */
+
+.egresados-admin-loading {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  min-height: 160px;
+
+  color: #6d91ad;
+
+  font-size: 13px;
+
+}
+
+
+.egresados-admin-loading span {
+
+  width: 7px;
+
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #20a9ed;
+
+  box-shadow:
+    0 0 12px rgba(
+      32,
+      169,
+      237,
+      0.7
+    );
+
+}
+
+
+/* =====================================================
+   TABLA
+   ===================================================== */
+.egresados-table {
+
+  width: 100%;
+
+  min-width: 0;
+
+  border-collapse: collapse;
+
+  table-layout: fixed;
+
+}
+.egresados-table-wrapper {
+
+  width: 100%;
+
+  margin-top: 20px;
+
+  overflow-x: hidden;
+
+  border-top:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.12
+    );
+
+}
+
+
+/* =====================================================
+   AJUSTE DE COLUMNAS
+   ===================================================== */
+
+.egresados-table th:nth-child(1),
+.egresados-table td:nth-child(1) {
+  width: 22%;
+}
+
+.egresados-table th:nth-child(2),
+.egresados-table td:nth-child(2) {
+  width: 13%;
+}
+
+.egresados-table th:nth-child(3),
+.egresados-table td:nth-child(3) {
+  width: 18%;
+}
+
+.egresados-table th:nth-child(4),
+.egresados-table td:nth-child(4) {
+  width: 22%;
+}
+
+.egresados-table th:nth-child(5),
+.egresados-table td:nth-child(5) {
+  width: 13%;
+}
+
+.egresados-table th:nth-child(6),
+.egresados-table td:nth-child(6) {
+  width: 12%;
+}
+
+
+/* Evitar que textos largos rompan la tabla */
+
+.egresados-table td {
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+}
+
+.egresados-table thead {
+
+  background:
+    rgba(
+      8,
+      24,
+      37,
+      0.55
+    );
+
+}
+
+
+.egresados-table th {
+
+  padding: 15px 14px;
+
+  text-align: left;
+
+  color: #438fb9;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+
+  border-bottom:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.16
+    );
+
+}
+
+
+.egresados-table td {
+
+  padding: 17px 14px;
+
+  border-bottom:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.10
+    );
+
+  color: #89a9c0;
+
+  font-size: 12px;
+
+  vertical-align: middle;
+
+}
+
+
+.egresados-table tbody tr {
+
+  transition:
+    background 0.2s ease;
+
+}
+
+
+.egresados-table tbody tr:hover {
+
+  background:
+    rgba(
+      32,
+      169,
+      237,
+      0.035
+    );
+
+}
+
+
+.egresado-name {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+}
+
+
+.egresado-name strong {
+
+  color: #edf6fd;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+}
+
+
+.egresado-name span {
+
+  color: #52718a;
+
+  font-size: 10px;
+
+}
+
+
+.egresado-view-button {
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #20a9ed;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  cursor: pointer;
+
+}
+
+
+.egresado-view-button:hover {
+
+  color: #8ed9ff;
+
+}
+
+
+/* =====================================================
+   SIN RESULTADOS
+   ===================================================== */
+
+.egresados-empty {
+
+  height: 150px;
+
+  text-align: center !important;
+
+  color: #58758b !important;
+
+}
+
+
+/* =====================================================
+   MODAL
+   ===================================================== */
+
+.egresado-detail-overlay {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 30px;
+
+  box-sizing: border-box;
+
+  background:
+    rgba(
+      0,
+      7,
+      14,
+      0.82
+    );
+
+  backdrop-filter:
+    blur(5px);
+
+}
+
+
+.egresado-detail {
+
+  width: min(
+    850px,
+    100%
+  );
+
+  max-height: 88vh;
+
+  overflow-y: auto;
+
+  padding: 32px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.25
+    );
+
+  border-radius: 8px;
+
+  background:
+    #07131e;
+
+  box-shadow:
+    0 25px 80px
+    rgba(
+      0,
+      0,
+      0,
+      0.5
+    );
+
+}
+
+
+.egresado-detail-header {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 30px;
+
+  padding-bottom: 25px;
+
+  border-bottom:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.15
+    );
+
+}
+
+
+.egresado-detail-header span {
+
+  color: #20a9ed;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.7px;
+
+}
+
+
+.egresado-detail-header h2 {
+
+  margin: 8px 0 0;
+
+  color: #edf7ff;
+
+  font-size: 26px;
+
+  font-weight: 500;
+
+}
+
+
+.egresado-detail-close {
+
+  width: 34px;
+
+  height: 34px;
+
+  border:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.22
+    );
+
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: #79a0b9;
+
+  font-size: 21px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+}
+
+
+.egresado-detail-close:hover {
+
+  color: #ffffff;
+
+  border-color: #20a9ed;
+
+}
+
+
+/* =====================================================
+   INFORMACIÓN
+   ===================================================== */
+
+.egresado-detail-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 0;
+
+}
+
+
+.egresado-detail-grid > div {
+
+  padding: 20px 18px;
+
+  border-bottom:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.10
+    );
+
+}
+
+
+.egresado-detail-grid span,
+.egresado-detail-description span {
+
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #428eb9;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+
+}
+
+
+.egresado-detail-grid strong {
+
+  color: #dcebf6;
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  line-height: 1.5;
+
+}
+
+
+/* =====================================================
+   DESCRIPCIÓN
+   ===================================================== */
+
+.egresado-detail-description {
+
+  padding: 24px 0;
+
+  border-bottom:
+    1px solid rgba(
+      80,
+      157,
+      204,
+      0.10
+    );
+
+}
+
+
+.egresado-detail-description p {
+
+  margin: 0;
+
+  color: #7898af;
+
+  font-size: 13px;
+
+  line-height: 1.7;
+
+}
+
+
+/* =====================================================
+   LINKS
+   ===================================================== */
+
+.egresado-detail-links {
+
+  display: flex;
+
+  gap: 22px;
+
+  padding-top: 22px;
+
+}
+
+
+.egresado-detail-links a {
+
+  color: #20a9ed;
+
+  font-size: 12px;
+
+  text-decoration: none;
+
+}
+
+
+.egresado-detail-links a:hover {
+
+  color: #a4e0ff;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 850px) {
+
+  .egresados-admin-filters {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+
+  .egresados-admin-header {
+
+    align-items: flex-start;
+
+    flex-direction: column;
+
+  }
+
+
+  .egresados-admin-total {
+
+    text-align: left;
+
+  }
+
+
+  .egresado-detail-grid {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+
+  .egresado-detail {
+
+    padding: 22px;
+
+  }
+
+}
+/* =====================================================
+   MODAL PERFIL DEL EGRESADO
+   ===================================================== */
+
+.egresado-detail-overlay {
+  position: fixed !important;
+
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 30px;
+
+  background: rgba(1, 7, 14, 0.88);
+
+  backdrop-filter: blur(9px);
+
+  -webkit-backdrop-filter: blur(9px);
+
+  z-index: 2147483647 !important;
+
+  overflow-y: auto;
+
+  animation: egresadoOverlayEntrada 0.22s ease-out;
+}
+
+
+/* =====================================================
+   ANIMACIÓN DEL FONDO
+   ===================================================== */
+
+@keyframes egresadoOverlayEntrada {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+
+}
+
+
+/* =====================================================
+   CONTENEDOR DEL PERFIL
+   ===================================================== */
+
+.egresado-detail {
+
+  position: relative !important;
+
+  width: min(920px, 94vw) !important;
+
+  max-width: 920px !important;
+
+  max-height: calc(100vh - 60px) !important;
+
+  margin: 0 !important;
+
+  padding: 38px !important;
+
+  box-sizing: border-box;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  background: #03111c !important;
+
+  border: 1px solid rgba(32, 191, 255, 0.38);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 35px 90px rgba(0, 0, 0, 0.75),
+    0 0 60px rgba(0, 166, 255, 0.10);
+
+  color: #edf7ff;
+
+  animation: egresadoModalEntrada 0.28s ease-out;
+
+}
+
+
+/* =====================================================
+   ANIMACIÓN DEL PANEL
+   ===================================================== */
+
+@keyframes egresadoModalEntrada {
+
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+}
+
+
+/* =====================================================
+   SCROLLBAR DEL MODAL
+   ===================================================== */
+
+.egresado-detail::-webkit-scrollbar {
+
+  width: 7px;
+
+}
+
+
+.egresado-detail::-webkit-scrollbar-track {
+
+  background: #020b14;
+
+}
+
+
+.egresado-detail::-webkit-scrollbar-thumb {
+
+  background: #155a7d;
+
+  border-radius: 20px;
+
+}
+
+
+.egresado-detail::-webkit-scrollbar-thumb:hover {
+
+  background: #20bfff;
+
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.egresado-detail-header {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 25px;
+
+  padding-bottom: 26px;
+
+  border-bottom: 1px solid rgba(75, 165, 220, 0.18);
+
+}
+
+
+.egresado-detail-header span {
+
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #20bfff;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+
+}
+
+
+.egresado-detail-header h2 {
+
+  margin: 0;
+
+  color: #f1f7fb;
+
+  font-size: 32px;
+
+  line-height: 1.2;
+
+  font-weight: 600;
+
+}
+
+
+/* =====================================================
+   BOTÓN CERRAR
+   ===================================================== */
+
+.egresado-detail-close {
+
+  width: 44px;
+
+  height: 44px;
+
+  min-width: 44px;
+
+  border: 1px solid rgba(32, 191, 255, 0.32);
+
+  border-radius: 50%;
+
+  background: rgba(3, 17, 28, 0.8);
+
+  color: #8fb1c6;
+
+  font-size: 28px;
+
+  line-height: 1;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+
+}
+
+
+.egresado-detail-close:hover {
+
+  background: rgba(32, 191, 255, 0.10);
+
+  border-color: #20bfff;
+
+  color: #ffffff;
+
+  transform: rotate(90deg);
+
+}
+
+
+/* =====================================================
+   GRID DE INFORMACIÓN
+   ===================================================== */
+
+.egresado-detail-grid {
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  margin-top: 5px;
+
+}
+
+
+.egresado-detail-grid > div {
+
+  min-width: 0;
+
+  padding: 22px 18px;
+
+  border-bottom: 1px solid rgba(75, 165, 220, 0.14);
+
+}
+
+
+.egresado-detail-grid > div:nth-child(odd) {
+
+  border-right: 1px solid rgba(75, 165, 220, 0.14);
+
+}
+
+
+.egresado-detail-grid span {
+
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #20bfff;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.6px;
+
+}
+
+
+.egresado-detail-grid strong {
+
+  display: block;
+
+  color: #dcebf5;
+
+  font-size: 15px;
+
+  line-height: 1.5;
+
+  font-weight: 500;
+
+  overflow-wrap: anywhere;
+
+}
+
+
+/* =====================================================
+   DESCRIPCIÓN
+   ===================================================== */
+
+.egresado-detail-description {
+
+  padding: 28px 0;
+
+  border-bottom: 1px solid rgba(75, 165, 220, 0.14);
+
+}
+
+
+.egresado-detail-description span {
+
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #20bfff;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.6px;
+
+}
+
+
+.egresado-detail-description p {
+
+  margin: 0;
+
+  color: #8eafc3;
+
+  font-size: 14px;
+
+  line-height: 1.8;
+
+}
+
+
+/* =====================================================
+   REDES
+   ===================================================== */
+
+.egresado-detail-links {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 12px;
+
+  padding-top: 25px;
+
+}
+
+
+.egresado-detail-links a {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 10px 17px;
+
+  border: 1px solid rgba(32, 191, 255, 0.35);
+
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #20bfff;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+
+}
+
+
+.egresado-detail-links a:hover {
+
+  background: rgba(32, 191, 255, 0.08);
+
+  border-color: #20bfff;
+
+  transform: translateY(-2px);
+
+}
+
+
+/* =====================================================
+   ID
+   ===================================================== */
+
+.egresado-detail-id {
+
+  margin-top: 25px;
+
+  padding-top: 20px;
+
+  border-top: 1px solid rgba(75, 165, 220, 0.12);
+
+}
+
+
+.egresado-detail-id span {
+
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #47728a;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+
+}
+
+
+.egresado-detail-id code {
+
+  color: #52788d;
+
+  font-size: 11px;
+
+  word-break: break-all;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 760px) {
+
+  .egresado-detail-overlay {
+
+    padding: 15px;
+
+    align-items: center;
+
+  }
+
+
+  .egresado-detail {
+
+    width: 100% !important;
+
+    max-height: calc(100vh - 30px) !important;
+
+    padding: 25px !important;
+
+    border-radius: 14px;
+
+  }
+
+
+  .egresado-detail-header h2 {
+
+    font-size: 25px;
+
+  }
+
+
+  .egresado-detail-grid {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+  .egresado-detail-grid > div:nth-child(odd) {
+
+    border-right: none;
+
+  }
+
+}
+
+
+@media (max-width: 480px) {
+
+  .egresado-detail {
+
+    padding: 20px !important;
+
+  }
+
+
+  .egresado-detail-header {
+
+    gap: 15px;
+
+  }
+
+
+  .egresado-detail-header h2 {
+
+    font-size: 22px;
+
+  }
+
+
+  .egresado-detail-close {
+
+    width: 38px;
+
+    height: 38px;
+
+    min-width: 38px;
+
+    font-size: 24px;
+
+  }
+
+}
+/* =====================================================
+   CLASIFICACIÓN CON IA
+   OPCIÓN 3 — MINIMALISTA / INSTITUCIONAL
+   ===================================================== */
+
+.egresado-detail-ai {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+
+  gap: 18px;
+
+  padding: 28px 0;
+
+  border-bottom: 1px solid rgba(80, 157, 204, 0.08);
+}
+
+
+/* =====================================================
+   ENCABEZADO
+   ===================================================== */
+
+.egresado-detail-ai > span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #20bfff;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 2px;
+}
+
+.egresado-detail-ai > span::before {
+  content: "";
+
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #20bfff;
+
+  box-shadow:
+    0 0 10px rgba(32, 191, 255, 0.65);
+}
+
+
+/* =====================================================
+   BOTÓN
+   ===================================================== */
+
+.egresado-detail-ai > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 205px;
+  height: 42px;
+
+  padding: 0 20px;
+
+  border: 1px solid rgba(32, 191, 255, 0.35);
+  border-radius: 6px;
+
+  background: transparent;
+
+  color: #20bfff;
+
+  font-family: inherit;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.4px;
+
+  cursor: pointer;
+
+  transition:
+    all 0.25s ease;
+}
+
+.egresado-detail-ai > button:hover {
+  background: #20bfff;
+
+  border-color: #20bfff;
+
+  color: #03131c;
+
+  box-shadow:
+    0 0 20px rgba(32, 191, 255, 0.15);
+
+  transform: translateY(-1px);
+}
+
+.egresado-detail-ai > button:disabled {
+  opacity: 0.5;
+
+  cursor: wait;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* =====================================================
+   ERROR
+   ===================================================== */
+
+.egresado-detail-ai > p {
+  grid-column: 1 / -1;
+
+  margin: 0;
+
+  padding: 10px 0;
+
+  color: #ff9090;
+
+  font-size: 11px;
+}
+
+
+/* =====================================================
+   RESULTADO IA
+   ===================================================== */
+
+.clasificacion-ia-resultado {
+  grid-column: 1 / -1;
+
+  position: relative;
+
+  margin-top: 8px;
+
+  padding: 4px 0 0;
+
+  background: transparent;
+}
+
+
+/* =====================================================
+   ENCABEZADO DEL RESULTADO
+   ===================================================== */
+
+.clasificacion-ia-encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 0 0 18px;
+
+  border-bottom: 1px solid rgba(80, 157, 204, 0.10);
+}
+
+.clasificacion-ia-encabezado > span {
+  display: block;
+
+  color: #20bfff;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.8px;
+}
+
+.clasificacion-ia-encabezado small {
+  color: #617f8f;
+
+  font-size: 10px;
+
+  line-height: 1.5;
+
+  text-align: right;
+}
+
+
+/* =====================================================
+   GRID DE INFORMACIÓN
+   ===================================================== */
+
+.clasificacion-ia-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 0;
+
+  margin-top: 2px;
+}
+
+
+/* =====================================================
+   DATOS PRINCIPALES
+   ===================================================== */
+
+.clasificacion-ia-item {
+  min-width: 0;
+
+  padding: 22px 20px;
+
+  border-bottom: 1px solid rgba(80, 157, 204, 0.08);
+
+  border-right: 1px solid rgba(80, 157, 204, 0.08);
+
+  background: transparent;
+}
+
+.clasificacion-ia-item:nth-child(4) {
+  border-right: none;
+}
+
+
+/* =====================================================
+   ETIQUETAS
+   ===================================================== */
+
+.clasificacion-ia-item > span {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #527f94;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.6px;
+
+  line-height: 1.3;
+}
+
+
+/* =====================================================
+   VALORES
+   ===================================================== */
+
+.clasificacion-ia-item > strong {
+  display: block;
+
+  color: #e5f4fa;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  line-height: 1.45;
+
+  word-break: break-word;
+}
+
+
+/* =====================================================
+   ELEMENTOS COMPLETOS
+   ===================================================== */
+
+.clasificacion-ia-item-completo {
+  grid-column: 1 / -1;
+
+  border-right: none;
+}
+
+
+/* =====================================================
+   TECNOLOGÍAS
+   ===================================================== */
+
+.clasificacion-ia-item-completo:nth-child(5) {
+  padding-top: 20px;
+}
+
+
+/* =====================================================
+   TAGS
+   ===================================================== */
+
+.clasificacion-ia-tags {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+}
+
+
+.clasificacion-ia-tags > span {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 6px 10px;
+
+  border: 1px solid rgba(32, 191, 255, 0.13);
+
+  border-radius: 4px;
+
+  background: rgba(32, 191, 255, 0.035);
+
+  color: #8dc9dd;
+
+  font-size: 12px;
+
+  font-weight: 500;
+
+  line-height: 1.3;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+
+.clasificacion-ia-tags > span:hover {
+  border-color: rgba(32, 191, 255, 0.35);
+
+  background: rgba(32, 191, 255, 0.07);
+
+  color: #d5f4ff;
+}
+
+
+/* =====================================================
+   PIE
+   ===================================================== */
+
+.clasificacion-ia-pie {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding-top: 17px;
+
+  margin-top: 1px;
+}
+
+
+.clasificacion-ia-pie > span {
+  color: #527181;
+
+  font-size: 10px;
+
+  line-height: 1.5;
+}
+
+
+.clasificacion-ia-pie strong {
+  color: #8dbfd1;
+
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   ESTADO DE REVISIÓN
+   ===================================================== */
+
+/* PENDIENTE */
+.clasificacion-ia-pie > span:first-child strong.estado-pendiente {
+  color: #d6bd6d;
+}
+
+
+/* APROBADA */
+.clasificacion-ia-pie > span:first-child strong.estado-aprobada {
+  color: #35d07f;
+}
+
+
+/* =====================================================
+   GENERADO POR IA
+   ===================================================== */
+
+.clasificacion-ia-pie > span:last-child strong {
+  color: #20bfff;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 900px) {
+
+  .clasificacion-ia-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .clasificacion-ia-item:nth-child(2) {
+    border-right: none;
+  }
+
+  .clasificacion-ia-item:nth-child(3) {
+    border-right: 1px solid rgba(80, 157, 204, 0.08);
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .egresado-detail-ai {
+    grid-template-columns: 1fr;
+
+  }
+
+  .egresado-detail-ai > button {
+    width: 100%;
+  }
+
+  .clasificacion-ia-encabezado {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 7px;
+  }
+
+  .clasificacion-ia-encabezado small {
+    text-align: left;
+  }
+
+}
+
+
+@media (max-width: 520px) {
+
+  .clasificacion-ia-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .clasificacion-ia-item {
+    border-right: none !important;
+  }
+
+  .clasificacion-ia-pie {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 7px;
+  }
+
+}
+/* =====================================================
+   REVISIÓN ADMINISTRATIVA DE LA CLASIFICACIÓN IA
+   ===================================================== */
+
+.clasificacion-ia-revision {
+  display: flex;
+  flex-direction: column;
+
+  gap: 26px;
+
+  margin-top: 24px;
+  padding: 26px 0 24px;
+
+  border-top:
+    1px solid rgba(75, 165, 220, 0.14);
+
+  border-bottom:
+    1px solid rgba(75, 165, 220, 0.14);
+
+  background: transparent;
+}
+
+
+/* =====================================================
+   INFORMACIÓN
+   ===================================================== */
+
+.clasificacion-ia-revision-info {
+  width: 100%;
+}
+
+.clasificacion-ia-revision-titulo {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #20bfff;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 1.8px;
+}
+
+.clasificacion-ia-revision-info p {
+  max-width: 760px;
+
+  margin: 0;
+
+  color: #7898af;
+
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+
+/* =====================================================
+   OBSERVACIÓN DEL ADMINISTRADOR
+   ===================================================== */
+
+.clasificacion-ia-revision-observacion {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  width: 100%;
+
+  margin-top: 2px;
+}
+
+.clasificacion-ia-revision-observacion label {
+  display: block;
+
+  color: #527181;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+}
+
+.clasificacion-ia-revision-observacion textarea {
+  display: block;
+
+  width: 100%;
+  min-height: 82px;
+
+  box-sizing: border-box;
+
+  padding: 12px 14px;
+
+  border:
+    1px solid
+    rgba(32, 191, 255, 0.20);
+
+  border-radius: 7px;
+
+  background:
+    rgba(5, 20, 29, 0.45);
+
+  color: #b8d5e2;
+
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.55;
+
+  outline: none;
+
+  resize: vertical;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.clasificacion-ia-revision-observacion textarea::placeholder {
+  color: #527181;
+
+  font-size: 11px;
+}
+
+.clasificacion-ia-revision-observacion textarea:hover {
+  border-color:
+    rgba(32, 191, 255, 0.32);
+}
+
+.clasificacion-ia-revision-observacion textarea:focus {
+  border-color:
+    rgba(32, 191, 255, 0.55);
+
+  background:
+    rgba(5, 20, 29, 0.65);
+
+  box-shadow:
+    0 0 0 2px
+    rgba(32, 191, 255, 0.05);
+}
+
+
+/* =====================================================
+   PARTE INFERIOR
+   ESTADO + ACCIÓN
+   ===================================================== */
+
+.clasificacion-ia-revision-footer {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  width: 100%;
+
+  margin-top: 2px;
+
+  padding-top: 4px;
+}
+
+
+/* =====================================================
+   ESTADO
+   ===================================================== */
+
+.clasificacion-ia-revision-estado {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  min-width: 110px;
+}
+
+.clasificacion-ia-revision-estado > span {
+  color: #527181;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+}
+
+.clasificacion-ia-revision-estado strong {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  text-transform: capitalize;
+}
+
+
+/* =====================================================
+   PUNTO DEL ESTADO
+   ===================================================== */
+
+.clasificacion-ia-revision-estado strong::before {
+  content: "";
+
+  width: 7px;
+  height: 7px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+}
+
+
+/* =====================================================
+   ESTADO PENDIENTE
+   ===================================================== */
+
+.clasificacion-ia-revision-estado
+strong.estado-pendiente {
+  color: #d6bd6d;
+}
+
+.clasificacion-ia-revision-estado
+strong.estado-pendiente::before {
+  background: #d6bd6d;
+
+  box-shadow:
+    0 0 8px
+    rgba(214, 189, 109, 0.55);
+}
+
+
+/* =====================================================
+   ESTADO APROBADA
+   ===================================================== */
+
+.clasificacion-ia-revision-estado
+strong.estado-aprobada {
+  color: #35d07f;
+}
+
+.clasificacion-ia-revision-estado
+strong.estado-aprobada::before {
+  background: #35d07f;
+
+  box-shadow:
+    0 0 9px
+    rgba(53, 208, 127, 0.60);
+}
+
+
+/* =====================================================
+   BOTÓN — PENDIENTE
+   ===================================================== */
+
+.clasificacion-ia-aprobar {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 205px;
+  height: 40px;
+
+  padding: 0 20px;
+
+  border:
+    1px solid
+    rgba(32, 191, 255, 0.32);
+
+  border-radius: 7px;
+
+  background:
+    rgba(32, 191, 255, 0.035);
+
+  color: #20bfff;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.clasificacion-ia-aprobar:hover {
+  background:
+    rgba(32, 191, 255, 0.08);
+
+  border-color:
+    rgba(32, 191, 255, 0.65);
+
+  color: #8edfff;
+
+  transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   BOTÓN — APROBADA
+   ===================================================== */
+
+.clasificacion-ia-aprobada {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 205px;
+  height: 40px;
+
+  padding: 0 20px;
+
+  border:
+    1px solid
+    rgba(53, 208, 127, 0.25);
+
+  border-radius: 7px;
+
+  background:
+    rgba(53, 208, 127, 0.035);
+
+  color: #35d07f;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.2px;
+
+  white-space: nowrap;
+
+  cursor: default;
+
+  opacity: 0.85;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 700px) {
+
+  .clasificacion-ia-revision-footer {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 18px;
+  }
+
+  .clasificacion-ia-revision-estado {
+    min-width: 0;
+  }
+
+  .clasificacion-ia-aprobar,
+  .clasificacion-ia-aprobada {
+    width: 100%;
+  }
+
+}
+
+
+@media (max-width: 480px) {
+
+  .clasificacion-ia-revision {
+    gap: 22px;
+
+    padding-top: 22px;
+    padding-bottom: 22px;
+  }
+
+  .clasificacion-ia-revision-info p {
+    font-size: 11px;
+  }
+
+  .clasificacion-ia-revision-observacion textarea {
+    min-height: 95px;
+
+    font-size: 11px;
+  }
+
+  .clasificacion-ia-revision-observacion textarea::placeholder {
+    font-size: 10px;
+  }
+
+}

@@ -1,0 +1,698 @@
+/* =========================================================
+   CONECTA-TEL · MÉTRICAS E INDICADORES
+   ========================================================= */
+
+.metricas-admin {
+  min-height: 100%;
+  padding: 30px 34px 34px;
+  color: #eaf5fa;
+  background:
+    radial-gradient(
+      circle at 8% 0%,
+      rgba(22, 141, 255, 0.07),
+      transparent 28%
+    ),
+    linear-gradient(
+      145deg,
+      #03131f 0%,
+      #020d16 55%,
+      #010a11 100%
+    );
+  font-family: inherit;
+}
+
+.metricas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(80, 157, 204, 0.14);
+}
+
+.metricas-header > div:first-child {
+  min-width: 0;
+}
+
+.metricas-eyebrow,
+.metric-card-heading > div > span,
+.metricas-filter-heading > div > span {
+  display: block;
+  color: #36b9ed;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.metricas-header h1 {
+  margin: 7px 0 0;
+  color: #f1f8fb;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -1px;
+}
+
+.metricas-header p {
+  margin: 8px 0 0;
+  color: #718fa3;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.metricas-header-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 210px;
+  padding: 10px 13px;
+  border: 1px solid rgba(54, 169, 225, 0.16);
+  border-radius: 12px;
+  background: rgba(4, 22, 35, 0.75);
+}
+
+.metricas-header-badge img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+
+.metricas-header-badge span {
+  display: block;
+  color: #4c8ba9;
+  font-size: 7px;
+  letter-spacing: 1.2px;
+}
+
+.metricas-header-badge strong {
+  display: block;
+  margin-top: 5px;
+  color: #dcecf2;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* ---------- FILTROS ---------- */
+
+.metricas-filters {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid rgba(80, 157, 204, 0.13);
+  border-radius: 10px;
+  background: rgba(4, 20, 32, 0.75);
+}
+
+.metricas-filter-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 13px;
+}
+
+.metricas-filter-heading h2 {
+  margin: 5px 0 0;
+  color: #e9f5fa;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.metricas-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.metricas-filter-actions > span {
+  color: #36b9ed;
+  font-size: 10px;
+}
+
+.metricas-filter-actions button {
+  border: 1px solid rgba(54, 169, 225, 0.22);
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: #8bb4c8;
+  background: rgba(22, 141, 255, 0.04);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.metricas-filter-actions button:hover:not(:disabled) {
+  border-color: rgba(54, 198, 244, 0.45);
+  color: #dff8ff;
+}
+
+.metricas-filter-actions button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.metricas-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.metricas-filter-grid label {
+  min-width: 0;
+}
+
+.metricas-filter-grid label > span {
+  display: block;
+  margin: 0 0 5px;
+  color: #66889c;
+  font-size: 7px;
+  letter-spacing: 0.8px;
+}
+
+.metricas-filter-grid select {
+  width: 100%;
+  min-height: 34px;
+  padding: 0 9px;
+  border: 1px solid rgba(80, 157, 204, 0.14);
+  border-radius: 6px;
+  outline: none;
+  color: #b8d4df;
+  background: #061a29;
+  font-size: 10px;
+}
+
+.metricas-filter-grid select:focus {
+  border-color: rgba(54, 198, 244, 0.45);
+}
+
+/* ---------- KPIs ---------- */
+
+.metricas-kpis {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.metric-kpi {
+  position: relative;
+  min-height: 88px;
+  padding: 13px 13px 11px;
+  overflow: hidden;
+  border: 1px solid rgba(80, 157, 204, 0.13);
+  border-radius: 8px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(7, 28, 44, 0.94),
+      rgba(3, 15, 25, 0.98)
+    );
+}
+
+.metric-kpi::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    #168dff,
+    rgba(54, 198, 244, 0.05)
+  );
+}
+
+.metric-kpi span {
+  display: block;
+  color: #4f88a4;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+}
+
+.metric-kpi strong {
+  display: block;
+  margin-top: 9px;
+  color: #f0f9fc;
+  font-size: 25px;
+  font-weight: 400;
+}
+
+.metric-kpi small {
+  display: block;
+  margin-top: 6px;
+  color: #557487;
+  font-size: 7px;
+}
+
+/* ---------- GRID ---------- */
+
+.metricas-grid {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.metricas-grid-two {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.metric-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: 17px 18px;
+  border: 1px solid rgba(80, 157, 204, 0.13);
+  border-radius: 9px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(5, 23, 37, 0.98),
+      rgba(2, 13, 22, 0.99)
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.012),
+    0 9px 25px rgba(0, 0, 0, 0.08);
+}
+
+.metric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(22, 141, 255, 0.65),
+    rgba(54, 198, 244, 0.2),
+    transparent
+  );
+}
+
+.metric-card-heading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 5px;
+}
+
+.metric-card-heading h2 {
+  margin: 5px 0 0;
+  color: #e9f5fa;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.metric-card-heading > strong {
+  color: #53b7e9;
+  font-size: 21px;
+  font-weight: 400;
+}
+
+.metric-pie {
+  height: 270px;
+}
+
+.metric-chart {
+  height: 285px;
+}
+
+/* ---------- LISTAS ---------- */
+
+.metric-list {
+  min-height: 230px;
+  padding-top: 5px;
+}
+
+.metric-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 13px 2px;
+  border-bottom: 1px solid rgba(80, 157, 204, 0.09);
+}
+
+.metric-list-row span {
+  display: block;
+  color: #b8d2dd;
+  font-size: 9px;
+}
+
+.metric-list-row small {
+  display: block;
+  margin-top: 4px;
+  color: #557587;
+  font-size: 7px;
+}
+
+.metric-list-row strong {
+  color: #47bff0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* ---------- COMPLETITUD ---------- */
+
+.metric-completeness {
+  min-height: 230px;
+  padding-top: 8px;
+}
+
+.metric-completeness-row {
+  padding: 9px 0;
+}
+
+.metric-completeness-row > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.metric-completeness-row span {
+  color: #7895a6;
+  font-size: 10px;
+}
+
+.metric-completeness-row strong {
+  color: #c5e2eb;
+  font-size: 10px;
+}
+
+.metric-progress {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(80, 157, 204, 0.08);
+}
+
+.metric-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #168dff,
+    #36c6f4
+  );
+}
+
+/* ---------- TAGS ---------- */
+
+.metric-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 7px;
+  min-height: 170px;
+  padding-top: 8px;
+}
+
+.metric-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 7px 9px;
+  border: 1px solid rgba(54, 169, 225, 0.14);
+  border-radius: 7px;
+  background: rgba(22, 141, 255, 0.035);
+}
+
+.metric-tag span {
+  overflow: hidden;
+  color: #8eacba;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric-tag strong {
+  color: #42bff0;
+  font-size: 10px;
+}
+
+/* ---------- EMPTY ---------- */
+
+.metric-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  text-align: center;
+}
+
+.metric-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(54, 169, 225, 0.16);
+  border-radius: 50%;
+  color: #41687c;
+  background: rgba(54, 169, 225, 0.025);
+  font-size: 14px;
+}
+
+.metric-empty strong {
+  color: #718e9e;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.metric-empty span {
+  margin-top: 5px;
+  color: #486879;
+  font-size: 7px;
+}
+
+/* ---------- TOOLTIP ---------- */
+
+.metric-tooltip {
+  min-width: 125px;
+  padding: 9px 11px;
+  border: 1px solid rgba(54, 169, 225, 0.25);
+  border-radius: 7px;
+  background: rgba(2, 14, 24, 0.97);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+}
+
+.metric-tooltip strong {
+  display: block;
+  color: #eef8fc;
+  font-size: 9px;
+}
+
+.metric-tooltip span {
+  display: block;
+  margin-top: 4px;
+  color: #44c5f2;
+  font-size: 12px;
+}
+
+.metric-tooltip small {
+  display: block;
+  margin-top: 2px;
+  color: #668494;
+  font-size: 10px;
+}
+
+/* ---------- FOOTER ---------- */
+
+.metricas-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 8px 2px 2px;
+  color: #3f5d6e;
+  font-size: 7px;
+}
+
+/* ---------- LOADING / ERROR ---------- */
+
+.metricas-loading,
+.metricas-error {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+}
+
+.metricas-loading strong,
+.metricas-error strong {
+  color: #cde5ed;
+  font-size: 11px;
+}
+
+.metricas-loading span,
+.metricas-error span {
+  color: #5d7c8d;
+  font-size: 10px;
+}
+
+.metric-loader {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 6px;
+  border: 2px solid rgba(54, 169, 225, 0.12);
+  border-top-color: #168dff;
+  border-radius: 50%;
+  animation: metricSpin 0.9s linear infinite;
+}
+
+@keyframes metricSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 1200px) {
+  .metricas-filter-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .metricas-kpis {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 850px) {
+  .metricas-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .metricas-grid-two {
+    grid-template-columns: 1fr;
+  }
+
+  .metricas-filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .metricas-admin {
+    padding: 20px 16px;
+  }
+
+  .metricas-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .metricas-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metricas-filter-heading,
+  .metricas-filter-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .metricas-footer {
+    flex-direction: column;
+  }
+}
+
+
+/* ---------- ANÁLISIS CON IA ---------- */
+.metricas-ia-section {
+  margin: 18px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(80, 157, 204, 0.16);
+}
+
+.metricas-ia-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+
+.metricas-ia-heading h2 {
+  margin: 7px 0 0;
+  color: #e9f5fa;
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -0.4px;
+}
+
+.metricas-ia-heading p {
+  max-width: 720px;
+  margin: 8px 0 0;
+  color: #718fa3;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.metricas-ia-model {
+  min-width: 150px;
+  padding: 12px 14px;
+  border: 1px solid rgba(54, 169, 225, 0.16);
+  border-radius: 9px;
+  background: rgba(4, 22, 35, 0.75);
+}
+
+.metricas-ia-model span {
+  display: block;
+  color: #4c8ba9;
+  font-size: 7px;
+  letter-spacing: 1.2px;
+}
+
+.metricas-ia-model strong {
+  display: block;
+  margin-top: 5px;
+  color: #dcecf2;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.metricas-ia-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.metricas-ia-empty {
+  margin-top: 10px;
+}
+
+.metricas-ia-empty > p {
+  margin: 0 0 12px;
+  color: #557487;
+  font-size: 9px;
+  text-align: center;
+}
+
+@media (max-width: 1000px) {
+  .metricas-ia-kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 850px) {
+  .metricas-ia-heading {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .metricas-ia-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

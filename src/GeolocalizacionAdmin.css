@@ -1,0 +1,1405 @@
+/* =========================================================
+   CONECTA-TEL
+   GEOLOCALIZACIÓN ADMIN
+   ========================================================= */
+
+.geo-page {
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
+
+  color: #f4f8fc;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.geo-header {
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 16px;
+
+}
+
+
+.geo-eyebrow {
+
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #55c9ff;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+}
+
+
+.geo-header h1 {
+
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 29px;
+
+  line-height: 1.08;
+
+  font-weight: 700;
+
+  letter-spacing: -0.7px;
+
+}
+
+
+.geo-header h1 span {
+
+  color: #55c9ff;
+
+}
+
+
+.geo-header p {
+
+  margin: 7px 0 0;
+
+  color: #8093a5;
+
+  font-size: 13px;
+
+  line-height: 1.4;
+
+}
+
+
+.geo-status {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding-bottom: 4px;
+
+  color: #6f8395;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.4px;
+
+}
+
+
+.geo-status-dot {
+
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #28c7a0;
+
+  box-shadow:
+    0 0 0 4px rgba(40, 199, 160, 0.08),
+    0 0 14px rgba(40, 199, 160, 0.35);
+
+}
+
+
+/* =========================================================
+   ESTADÍSTICAS
+   ========================================================= */
+
+.geo-stats {
+
+  flex-shrink: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin-bottom: 11px;
+
+}
+
+
+.geo-stat-card {
+
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 12px 14px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(92, 146, 180, 0.15);
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(10, 28, 43, 0.95),
+      rgba(5, 17, 28, 0.95)
+    );
+
+}
+
+
+.geo-stat-highlight {
+
+  border-color:
+    rgba(85, 201, 255, 0.28);
+
+}
+
+
+.geo-stat-icon {
+
+  flex-shrink: 0;
+
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background:
+    rgba(85, 201, 255, 0.08);
+
+  color: #55c9ff;
+
+  font-size: 14px;
+
+}
+
+
+.geo-stat-card > div:last-child {
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+}
+
+
+.geo-stat-card small {
+
+  color: #64798c;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+
+}
+
+
+.geo-stat-card strong {
+
+  margin-top: 2px;
+
+  color: #ffffff;
+
+  font-size: 20px;
+
+  line-height: 1.1;
+
+  font-weight: 600;
+
+}
+
+
+.geo-stat-card > div:last-child > span {
+
+  margin-top: 2px;
+
+  color: #687d90;
+
+  font-size: 9px;
+
+}
+
+
+.geo-stat-city {
+
+  max-width: 150px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  font-size: 17px !important;
+
+}
+
+
+/* =========================================================
+   FILTROS
+   ========================================================= */
+
+.geo-filters {
+
+  flex-shrink: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(240px, 2fr)
+    minmax(150px, 1fr)
+    minmax(170px, 1fr)
+    auto;
+
+  gap: 7px;
+
+  margin-bottom: 9px;
+
+}
+
+
+.geo-search {
+
+  height: 36px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 11px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(92, 146, 180, 0.16);
+
+  border-radius: 8px;
+
+  background:
+    rgba(4, 16, 27, 0.9);
+
+}
+
+
+.geo-search span {
+
+  color: #627a8d;
+
+  font-size: 15px;
+
+}
+
+
+.geo-search input {
+
+  width: 100%;
+
+  border: 0;
+
+  outline: 0;
+
+  background: transparent;
+
+  color: #e9f3fa;
+
+  font-size: 11px;
+
+}
+
+
+.geo-search input::placeholder {
+
+  color: #5d7183;
+
+}
+
+
+.geo-filters select {
+
+  width: 100%;
+
+  height: 36px;
+
+  padding: 0 9px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(92, 146, 180, 0.16);
+
+  border-radius: 8px;
+
+  outline: none;
+
+  background:
+    #081724;
+
+  color: #aebdca;
+
+  font-size: 10px;
+
+  cursor: pointer;
+
+}
+
+
+.geo-filters select:focus {
+
+  border-color:
+    rgba(85, 201, 255, 0.45);
+
+}
+
+
+.geo-clear-button {
+
+  height: 36px;
+
+  padding: 0 13px;
+
+  border:
+    1px solid
+    rgba(85, 201, 255, 0.25);
+
+  border-radius: 8px;
+
+  background:
+    rgba(85, 201, 255, 0.06);
+
+  color: #65d2ff;
+
+  font-size: 10px;
+
+  cursor: pointer;
+
+}
+
+
+.geo-clear-button:hover {
+
+  background:
+    rgba(85, 201, 255, 0.12);
+
+}
+
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.geo-toolbar {
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 9px;
+
+}
+
+
+.geo-modes {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+}
+
+
+.geo-modes > span {
+
+  margin-right: 5px;
+
+  color: #607689;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+
+}
+
+
+.geo-modes button,
+.geo-map-type button {
+
+  height: 28px;
+
+  padding: 0 10px;
+
+  border:
+    1px solid
+    rgba(92, 146, 180, 0.14);
+
+  border-radius: 7px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  color: #7f93a5;
+
+  font-size: 9px;
+
+  cursor: pointer;
+
+  transition:
+    0.18s ease;
+
+}
+
+
+.geo-modes button:hover,
+.geo-map-type button:hover {
+
+  color: #ffffff;
+
+  border-color:
+    rgba(85, 201, 255, 0.3);
+
+}
+
+
+.geo-modes button.active,
+.geo-map-type button.active {
+
+  color: #ffffff;
+
+  background:
+    rgba(85, 201, 255, 0.11);
+
+  border-color:
+    rgba(85, 201, 255, 0.38);
+
+}
+
+
+.geo-map-type {
+
+  display: flex;
+
+  gap: 4px;
+
+}
+
+
+/* =========================================================
+   MAPA
+   ========================================================= */
+
+.geolocalizacion-map {
+
+  position: relative;
+
+  flex: 1;
+
+  min-height: 0;
+
+  width: 100%;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(92, 146, 180, 0.18);
+
+  border-radius: 13px;
+
+  background:
+    #07131e;
+
+}
+
+
+.geolocalizacion-map > div {
+
+  box-sizing: border-box;
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN SOBRE EL MAPA
+   ========================================================= */
+
+.geo-map-overlay {
+
+  position: absolute;
+
+  z-index: 20;
+
+  top: 11px;
+
+  left: 11px;
+
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 5px;
+
+  padding: 7px 10px;
+
+  border:
+    1px solid
+    rgba(255,255,255,0.11);
+
+  border-radius: 7px;
+
+  background:
+    rgba(3, 12, 20, 0.84);
+
+  backdrop-filter:
+    blur(10px);
+
+  pointer-events: none;
+
+}
+
+
+.geo-map-overlay strong {
+
+  color: #ffffff;
+
+  font-size: 12px;
+
+}
+
+
+.geo-map-overlay span {
+
+  color: #91a3b2;
+
+  font-size: 9px;
+
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.geo-loading {
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 30;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 11px;
+
+  background:
+    #07131e;
+
+  color: #8497a8;
+
+  font-size: 12px;
+
+}
+
+
+.geo-spinner {
+
+  width: 27px;
+
+  height: 27px;
+
+  border:
+    2px solid
+    rgba(85, 201, 255, 0.14);
+
+  border-top-color:
+    #55c9ff;
+
+  border-radius: 50%;
+
+  animation:
+    geo-spin
+    0.8s
+    linear
+    infinite;
+
+}
+
+
+@keyframes geo-spin {
+
+  to {
+
+    transform:
+      rotate(360deg);
+
+  }
+
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.geolocalizacion-error {
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 30;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 30px;
+
+  box-sizing: border-box;
+
+  background:
+    #07131e;
+
+  color: #ff8998;
+
+  font-size: 13px;
+
+  text-align: center;
+
+}
+
+
+/* =========================================================
+   FOOTER MAPA
+   ========================================================= */
+
+.geo-map-footer {
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding-top: 8px;
+
+}
+
+
+.geo-result-count {
+
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 6px;
+
+}
+
+
+.geo-result-count strong {
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+}
+
+
+.geo-result-count span {
+
+  color: #627588;
+
+  font-size: 9px;
+
+}
+
+
+.geo-legend {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  color: #617588;
+
+  font-size: 9px;
+
+}
+
+
+.geo-legend span:first-child {
+
+  color: #55c9ff;
+
+  font-size: 13px;
+
+}
+
+
+/* =========================================================
+   INFO WINDOW
+   ========================================================= */
+
+.geo-info-window {
+
+  min-width: 230px;
+
+  max-width: 280px;
+
+  padding: 2px;
+
+  color: #17232d;
+
+}
+
+
+.geo-info-label {
+
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #218bb5;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
+
+}
+
+
+.geo-info-window h3 {
+
+  margin: 0 0 8px;
+
+  color: #101820;
+
+  font-size: 16px;
+
+}
+
+
+.geo-info-location {
+
+  margin: 0 0 9px;
+
+  color: #53616d;
+
+  font-size: 10px;
+
+}
+
+
+.geo-info-row {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+
+  margin-top: 7px;
+
+}
+
+
+.geo-info-row span {
+
+  color: #89949e;
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.8px;
+
+}
+
+
+.geo-info-row strong {
+
+  color: #26333e;
+
+  font-size: 10px;
+
+}
+
+
+.geo-info-period {
+
+  margin-top: 9px;
+
+  padding-top: 7px;
+
+  border-top:
+    1px solid
+    #e4e8eb;
+
+  color: #596774;
+
+  font-size: 9px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .geo-stats {
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+  }
+
+
+  .geo-filters {
+
+    grid-template-columns:
+      2fr
+      1fr
+      1fr;
+
+  }
+
+
+  .geo-clear-button {
+
+    width: 100%;
+
+  }
+
+}
+
+
+@media (max-width: 750px) {
+
+  .geo-header {
+
+    align-items: flex-start;
+
+    flex-direction: column;
+
+  }
+
+
+  .geo-status {
+
+    padding-bottom: 0;
+
+  }
+
+
+  .geo-filters {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+
+  .geo-toolbar {
+
+    align-items: flex-start;
+
+    flex-direction: column;
+
+  }
+
+
+  .geo-map-type {
+
+    width: 100%;
+
+  }
+
+
+  .geo-map-type button {
+
+    flex: 1;
+
+  }
+
+}
+
+
+@media (max-width: 520px) {
+
+  .geo-stats {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+
+  .geo-map-footer {
+
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+  }
+
+}
+/* ============================================================
+   TARJETA DEL EGRESADO SELECCIONADO
+   ============================================================ */
+
+.geo-selected-card {
+  position: absolute;
+
+  top: 18px;
+
+  right: 18px;
+
+  z-index: 100;
+
+  width: 310px;
+
+  box-sizing: border-box;
+
+  padding: 20px;
+
+  border:
+    1px solid
+    rgba(75, 193, 242, 0.25);
+
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(7, 25, 38, 0.97),
+      rgba(4, 17, 28, 0.98)
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.025);
+
+  backdrop-filter: blur(14px);
+
+  -webkit-backdrop-filter: blur(14px);
+
+  animation:
+    geo-card-in 0.22s ease-out;
+}
+
+
+@keyframes geo-card-in {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(-8px)
+      scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+}
+
+
+/* ============================================================
+   BOTÓN CERRAR
+   ============================================================ */
+
+.geo-selected-close {
+  position: absolute;
+
+  top: 11px;
+
+  right: 11px;
+
+  width: 29px;
+
+  height: 29px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  color: #7d94a5;
+
+  font-size: 19px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    all 0.2s ease;
+}
+
+
+.geo-selected-close:hover {
+  border-color:
+    rgba(85, 201, 255, 0.35);
+
+  background:
+    rgba(85, 201, 255, 0.1);
+
+  color: #ffffff;
+}
+
+
+/* ============================================================
+   ETIQUETA
+   ============================================================ */
+
+.geo-selected-label {
+  margin-bottom: 12px;
+
+  color: #55c9ff;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.8px;
+}
+
+
+/* ============================================================
+   CABECERA
+   ============================================================ */
+
+.geo-selected-header {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+
+  padding-right: 25px;
+}
+
+
+.geo-selected-avatar {
+  width: 43px;
+
+  height: 43px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(85, 201, 255, 0.28);
+
+  border-radius: 12px;
+
+  background:
+    rgba(85, 201, 255, 0.1);
+
+  color: #55c9ff;
+
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+
+.geo-selected-header h3 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+
+.geo-selected-header span {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #758b9c;
+
+  font-size: 10px;
+}
+
+
+/* ============================================================
+   DIVISOR
+   ============================================================ */
+
+.geo-selected-divider {
+  height: 1px;
+
+  margin: 16px 0;
+
+  background:
+    rgba(255, 255, 255, 0.07);
+}
+
+
+/* ============================================================
+   DATOS
+   ============================================================ */
+
+.geo-selected-data {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+
+.geo-selected-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+
+.geo-selected-icon {
+  width: 27px;
+
+  height: 27px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background:
+    rgba(85, 201, 255, 0.07);
+
+  color: #55c9ff;
+
+  font-size: 10px;
+}
+
+
+.geo-selected-item div {
+  min-width: 0;
+}
+
+
+.geo-selected-item small {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #607789;
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
+}
+
+
+.geo-selected-item strong {
+  display: block;
+
+  max-width: 220px;
+
+  overflow: hidden;
+
+  color: #dbe7ee;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  line-height: 1.3;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* ============================================================
+   PIE
+   ============================================================ */
+
+.geo-selected-footer {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 17px;
+
+  padding-top: 12px;
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.06);
+
+  color: #607789;
+
+  font-size: 8px;
+}
+
+
+.geo-selected-status {
+  width: 6px;
+
+  height: 6px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #23d18b;
+
+  box-shadow:
+    0 0 8px
+    rgba(35, 209, 139, 0.45);
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+  .geo-selected-card {
+    top: 12px;
+
+    right: 12px;
+
+    left: 12px;
+
+    width: auto;
+  }
+
+}
