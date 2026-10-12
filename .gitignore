@@ -35,3 +35,10 @@ serviceAccountKey.json
 egresados-importacion.json
 ~$*
 vite-error.txt
+# Archivos locales de Firebase
+.firebase/
+
+# Registros y datos temporales del piloto
+deploy-log.txt
+egresados-piloto-*.json
+egresados-piloto-*.xlsx

@@ -1,8 +1,12 @@
+
 import { useState } from "react";
 
 import {
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
+  getIdToken,
+  getIdTokenResult,
 } from "firebase/auth";
 
 import {
@@ -21,822 +25,483 @@ import PanelAdministrador from "./PanelAdministrador";
 
 import "./Login.css";
 
+const URL_CAMBIO_PASSWORD =
+  "https://us-central1-conecta-tel.cloudfunctions.net/completarCambioPassword";
 
 function Login({ onClose }) {
-
-
-  /*
-   * =====================================================
-   * ESTADOS
-   * =====================================================
-   */
-
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
   const [error, setError] = useState("");
-
   const [loading, setLoading] = useState(false);
 
-  // Usuario con rol Egresado
   const [egresado, setEgresado] = useState(null);
-
-  // Usuario con rol Administrador
   const [administrador, setAdministrador] = useState(null);
 
+  const [debeCambiarPassword, setDebeCambiarPassword] =
+    useState(false);
+  const [nuevaPassword, setNuevaPassword] = useState("");
+  const [confirmarPassword, setConfirmarPassword] = useState("");
 
   /*
-   * =====================================================
    * INICIO DE SESIÓN
-   * =====================================================
+   * Admite correo de administrador o código de egresado.
    */
-
   const handleLogin = async (e) => {
-
     e.preventDefault();
-
-    // Limpiar mensajes anteriores
     setError("");
-
-    // Activar estado de carga
     setLoading(true);
 
-
     try {
+      const identificador = email.trim();
+
+      // Los administradores ingresan con su correo.
+      // Los egresados ingresan con su código único, por ejemplo E-1.
+      const correoAcceso = identificador.includes("@")
+        ? identificador
+        : `ct-${identificador.toLowerCase().replace(/-/g, "")}@conecta-tel.firebaseapp.com`;
+      console.log("Correo de acceso calculado:", correoAcceso);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        correoAcceso,
+        password
+      );
+
+      const user = userCredential.user;
+      const tokenInfo = await getIdTokenResult(user, true);
 
       /*
-       * =================================================
-       * 1. AUTENTICACIÓN CON FIREBASE
-       * =================================================
+       * PRIMERO: comprobar si tiene un cambio obligatorio pendiente.
+       * No se consultan los paneles hasta completar el cambio.
        */
-
-      const userCredential =
-        await signInWithEmailAndPassword(
-          auth,
-          email.trim(),
-          password
-        );
-
-
-      const user =
-        userCredential.user;
-
-
-      console.log(
-        "================================="
-      );
-
-      console.log(
-        "USUARIO AUTENTICADO"
-      );
-
-      console.log(
-        "Correo:",
-        user.email
-      );
-
-      console.log(
-        "UID:",
-        user.uid
-      );
-
-      console.log(
-        "================================="
-      );
-
+      if (tokenInfo.claims.mustChangePassword === true) {
+        setDebeCambiarPassword(true);
+        setAdministrador(null);
+        setEgresado(null);
+        return;
+      }
 
       /*
-       * =================================================
-       * 2. BUSCAR ADMINISTRADOR
-       * =================================================
-       *
-       * La estructura utilizada es:
-       *
-       * administradores/{UID}
-       *
-       * Si existe este documento, el usuario es
-       * Administrador.
-       *
+       * SEGUNDO: buscar administrador por UID.
+       * Se conserva la estructura actual del proyecto.
        */
-
-      const adminRef =
-        doc(
-          db,
-          "administradores",
-          user.uid
-        );
-
-
-      const adminSnapshot =
-        await getDoc(adminRef);
-
-
-      /*
-       * =================================================
-       * 3. SI EXISTE EL ADMINISTRADOR
-       * =================================================
-       */
+      const adminRef = doc(db, "administradores", user.uid);
+      const adminSnapshot = await getDoc(adminRef);
 
       if (adminSnapshot.exists()) {
-
-
-        const datosAdministrador =
-          adminSnapshot.data();
-
-
-        console.log(
-          "Administrador encontrado:",
-          datosAdministrador
-        );
-
-
-        /*
-         * -----------------------------------------------
-         * VERIFICAR ESTADO DEL ADMINISTRADOR
-         * -----------------------------------------------
-         */
+        const datosAdministrador = adminSnapshot.data();
 
         if (datosAdministrador.activo !== true) {
-
+          await signOut(auth);
           setError(
             "El administrador se encuentra inactivo. Contacta al administrador del sistema."
           );
-
-
-          await signOut(auth);
-
           return;
-
         }
 
-
-        /*
-         * -----------------------------------------------
-         * CREAR OBJETO COMPLETO DEL ADMINISTRADOR
-         * -----------------------------------------------
-         */
-
-        const administradorCompleto = {
-
-          id:
-            adminSnapshot.id,
-
-          uid:
-            user.uid,
-
-          ...datosAdministrador,
-
-        };
-
-
-        console.log(
-          "================================="
-        );
-
-        console.log(
-          "ROL DETECTADO: ADMINISTRADOR"
-        );
-
-        console.log(
-          administradorCompleto
-        );
-
-        console.log(
-          "================================="
-        );
-
-
-        /*
-         * -----------------------------------------------
-         * LIMPIAR ESTADO DE EGRESADO
-         * -----------------------------------------------
-         */
-
         setEgresado(null);
-
-
-        /*
-         * -----------------------------------------------
-         * GUARDAR ADMINISTRADOR
-         * -----------------------------------------------
-         */
-
-        setAdministrador(
-          administradorCompleto
-        );
-
-
-        /*
-         * -----------------------------------------------
-         * TERMINAR LOGIN
-         * -----------------------------------------------
-         *
-         * No buscamos el administrador dentro de
-         * "egresados".
-         *
-         */
+        setAdministrador({
+          id: adminSnapshot.id,
+          uid: user.uid,
+          ...datosAdministrador,
+        });
 
         return;
-
       }
 
-
       /*
-       * =================================================
-       * 4. NO ES ADMINISTRADOR
-       * =================================================
-       *
-       * Si no existe:
-       *
-       * administradores/{UID}
-       *
-       * entonces comprobamos si es un egresado.
-       *
+       * TERCERO: buscar egresado por UID.
        */
-
-
-      console.log(
-        "El usuario no es administrador."
+      const egresadosRef = collection(db, "egresados");
+      const q = query(
+        egresadosRef,
+        where("uid", "==", user.uid)
       );
 
-      console.log(
-        "Buscando egresado..."
-      );
-
-
-      /*
-       * =================================================
-       * 5. BUSCAR EGRESADO EN FIRESTORE
-       * =================================================
-       *
-       * Se busca mediante:
-       *
-       * egresados
-       *    ↓
-       * uid == user.uid
-       *
-       */
-
-      const egresadosRef =
-        collection(
-          db,
-          "egresados"
-        );
-
-
-      const q =
-        query(
-          egresadosRef,
-          where(
-            "uid",
-            "==",
-            user.uid
-          )
-        );
-
-
-      const snapshot =
-        await getDocs(q);
-
-
-      /*
-       * =================================================
-       * 6. VERIFICAR SI EXISTE EL EGRESADO
-       * =================================================
-       */
+      const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
-
-
-        console.log(
-          "El usuario no existe como administrador ni como egresado."
-        );
-
-
+        await signOut(auth);
         setError(
           "El usuario no está registrado en CONECTA-TEL."
         );
-
-
-        /*
-         * Cerrar la sesión porque el usuario
-         * no pertenece a ninguno de los roles.
-         */
-
-        await signOut(auth);
-
         return;
-
       }
 
-
-      /*
-       * =================================================
-       * 7. OBTENER DOCUMENTO DEL EGRESADO
-       * =================================================
-       */
-
-      const egresadoDoc =
-        snapshot.docs[0];
-
-
-      /*
-       * =================================================
-       * 8. OBTENER DATOS
-       * =================================================
-       */
-
-      const datosEgresado =
-        egresadoDoc.data();
-
-
-      /*
-       * =================================================
-       * 9. CREAR OBJETO COMPLETO DEL EGRESADO
-       * =================================================
-       */
-
-      const egresadoCompleto = {
-
-        id:
-          egresadoDoc.id,
-
-        uid:
-          user.uid,
-
-        ...datosEgresado,
-
-      };
-
-
-      console.log(
-        "================================="
-      );
-
-      console.log(
-        "ROL DETECTADO: EGRESADO"
-      );
-
-      console.log(
-        "Egresado encontrado:",
-        egresadoCompleto
-      );
-
-      console.log(
-        "ID documento:",
-        egresadoDoc.id
-      );
-
-      console.log(
-        "UID:",
-        datosEgresado.uid
-      );
-
-      console.log(
-        "================================="
-      );
-
-
-      /*
-       * =================================================
-       * 10. LIMPIAR ESTADO DE ADMINISTRADOR
-       * =================================================
-       */
+      const egresadoDoc = snapshot.docs[0];
+      const datosEgresado = egresadoDoc.data();
 
       setAdministrador(null);
-
-
-      /*
-       * =================================================
-       * 11. GUARDAR EGRESADO
-       * =================================================
-       */
-
-      setEgresado(
-        egresadoCompleto
-      );
-
-
-    } catch (error) {
-
-
-      /*
-       * =================================================
-       * ERROR DE AUTENTICACIÓN
-       * =================================================
-       */
-
+      setEgresado({
+        id: egresadoDoc.id,
+        uid: user.uid,
+        ...datosEgresado,
+      });
+    } catch (err) {
       console.error(
-        "================================="
+        "Error de inicio de sesión:",
+        err?.code || "unknown"
       );
-
-      console.error(
-        "ERROR DE INICIO DE SESIÓN"
-      );
-
-      console.error(
-        error
-      );
-
-      console.error(
-        "Código:",
-        error?.code
-      );
-
-      console.error(
-        "Mensaje:",
-        error?.message
-      );
-
-      console.error(
-        "================================="
-      );
-
-
-      /*
-       * =================================================
-       * MENSAJES ESPECÍFICOS
-       * =================================================
-       */
 
       if (
-        error?.code ===
-        "auth/invalid-credential"
+        err?.code === "auth/invalid-credential" ||
+        err?.code === "auth/wrong-password" ||
+        err?.code === "auth/user-not-found" ||
+        err?.code === "auth/invalid-email"
       ) {
-
-        setError(
-          "Correo o contraseña incorrectos."
-        );
-
-      }
-
-      else if (
-        error?.code ===
-        "auth/user-not-found"
-      ) {
-
-        setError(
-          "No existe un usuario registrado con este correo."
-        );
-
-      }
-
-      else if (
-        error?.code ===
-        "auth/wrong-password"
-      ) {
-
-        setError(
-          "La contraseña es incorrecta."
-        );
-
-      }
-
-      else if (
-        error?.code ===
-        "auth/too-many-requests"
-      ) {
-
+        setError("Código o correo y contraseña incorrectos.");
+      } else if (err?.code === "auth/too-many-requests") {
         setError(
           "Demasiados intentos. Intenta nuevamente más tarde."
         );
-
-      }
-
-      else if (
-        error?.code ===
-        "permission-denied"
-      ) {
-
+      } else if (err?.code === "permission-denied") {
         setError(
-          "No tienes permisos para acceder a la información de este usuario."
+          "No tienes permisos para acceder a esta información."
         );
-
-      }
-
-      else {
-
+      } else {
         setError(
-          "No fue posible iniciar sesión. Intenta nuevamente."
+          "No fue posible iniciar sesión. Verifica tus datos e inténtalo nuevamente."
         );
-
       }
-
     } finally {
-
-
-      /*
-       * =================================================
-       * FINALIZAR CARGA
-       * =================================================
-       */
-
       setLoading(false);
-
     }
-
   };
 
-
   /*
-   * =====================================================
-   * CERRAR SESIÓN
-   * =====================================================
+   * CAMBIO OBLIGATORIO DE CONTRASEÑA
    */
+  const handleCambiarPassword = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  const handleLogout = async () => {
+    if (nuevaPassword.length < 8) {
+      setError(
+        "La nueva contraseña debe tener al menos 8 caracteres."
+      );
+      return;
+    }
+
+    if (nuevaPassword !== confirmarPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    const user = auth.currentUser;
+
+    if (!user) {
+      setError(
+        "La sesión expiró. Inicia sesión nuevamente."
+      );
+      setDebeCambiarPassword(false);
+      return;
+    }
+
+    setLoading(true);
 
     try {
+      /*
+       * Firebase Auth actualiza la contraseña.
+       */
+      await updatePassword(user, nuevaPassword);
 
       /*
-       * Cerrar sesión en Firebase
+       * Se obtiene un token reciente para llamar al backend.
        */
 
+      const token = await getIdToken(user, true);
+
+      const response = await fetch(URL_CAMBIO_PASSWORD, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nuevaPassword,
+        }),
+      });
+
+      const resultado = await response.json();
+
+      if (!response.ok || !resultado.success) {
+        throw new Error(
+          resultado.message ||
+            "No se pudo completar el cambio de contraseña."
+        );
+      }
+
+
+      /*
+       * El backend ya confirmó el cambio y retiró la
+       * marca mustChangePassword. Cerramos sesión para
+       * iniciar de nuevo con las credenciales actualizadas.
+       */
       await signOut(auth);
 
-
-      /*
-       * Limpiar usuario egresado
-       */
-
-      setEgresado(null);
-
-
-      /*
-       * Limpiar administrador
-       */
-
-      setAdministrador(null);
-
-
-      /*
-       * Limpiar formulario
-       */
-
-      setEmail("");
-
+      setDebeCambiarPassword(false);
+      setNuevaPassword("");
+      setConfirmarPassword("");
       setPassword("");
-
-      setError("");
-
-
-      console.log(
-        "Sesión cerrada correctamente."
+      setEmail("");
+      setError(
+        "Contraseña actualizada. Ingresa nuevamente con tu código y tu nueva contraseña."
       );
-
-
-    } catch (error) {
-
+    } catch (err) {
       console.error(
-        "Error al cerrar sesión:",
-        error
+        "Error al cambiar contraseña:",
+        err?.code || err?.message || "unknown"
       );
 
+      if (err?.code === "auth/weak-password") {
+        setError(
+          "La contraseña es demasiado débil. Elige otra de al menos 8 caracteres."
+        );
+      } else if (
+        err?.code === "auth/requires-recent-login"
+      ) {
+        setError(
+          "Por seguridad, inicia sesión nuevamente y repite el cambio."
+        );
+      } else {
+        setError(
+          err?.message ||
+            "No fue posible completar el cambio. Intenta nuevamente."
+        );
+      }
+    } finally {
+      setLoading(false);
     }
-
   };
 
+  /*
+   * CERRAR SESIÓN Y LIMPIAR ESTADOS
+   */
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+
+      setEgresado(null);
+      setAdministrador(null);
+      setDebeCambiarPassword(false);
+      setEmail("");
+      setPassword("");
+      setNuevaPassword("");
+      setConfirmarPassword("");
+      setError("");
+    } catch (err) {
+      console.error(
+        "Error al cerrar sesión:",
+        err?.code || "unknown"
+      );
+    }
+  };
 
   /*
-   * =====================================================
-   * PANEL DEL ADMINISTRADOR
-   * =====================================================
-   *
-   * IMPORTANTE:
-   *
-   * Primero comprobamos administrador.
-   *
+   * PANTALLA OBLIGATORIA DE CAMBIO DE CONTRASEÑA
+   * Se muestra antes de cualquiera de los paneles.
    */
+  if (debeCambiarPassword) {
+    return (
+      <div className="login-overlay">
+        <div className="login-modal">
+          <div className="login-header">
+            <img
+              src="/logo-conecta-tel.png"
+              alt="CONECTA-TEL"
+            />
 
+            <h2>Crea tu nueva contraseña</h2>
+
+            <p>
+              Para proteger tu cuenta, debes reemplazar
+              la contraseña temporal antes de ingresar.
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleCambiarPassword}
+            className="login-form"
+          >
+            <label htmlFor="nuevaPassword">
+              Nueva contraseña
+            </label>
+
+            <input
+              id="nuevaPassword"
+              type="password"
+              value={nuevaPassword}
+              onChange={(e) =>
+                setNuevaPassword(e.target.value)
+              }
+              placeholder="Mínimo 8 caracteres"
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+
+            <label htmlFor="confirmarPassword">
+              Confirmar nueva contraseña
+            </label>
+
+            <input
+              id="confirmarPassword"
+              type="password"
+              value={confirmarPassword}
+              onChange={(e) =>
+                setConfirmarPassword(e.target.value)
+              }
+              placeholder="Repite la nueva contraseña"
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+
+            {error && (
+              <p className="login-error" role="alert">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              className="login-submit"
+              disabled={loading}
+            >
+              {loading
+                ? "Actualizando..."
+                : "Guardar nueva contraseña"}
+            </button>
+
+            <button
+              type="button"
+              className="login-close"
+              aria-label="Cerrar sesión"
+              onClick={handleLogout}
+              disabled={loading}
+            >
+              Salir
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  /*
+   * PANEL ADMINISTRADOR
+   */
   if (administrador) {
-
     return (
-
       <PanelAdministrador
-
-        administrador={
-          administrador
-        }
-
+        administrador={administrador}
         onLogout={async () => {
-
           await handleLogout();
-
           onClose();
-
         }}
-
       />
-
     );
-
   }
 
-
   /*
-   * =====================================================
-   * PANEL DEL EGRESADO
-   * =====================================================
+   * PANEL EGRESADO
    */
-
   if (egresado) {
-
     return (
-
       <PanelEgresado
-
-        egresado={
-          egresado
-        }
-
+        egresado={egresado}
         onLogout={async () => {
-
           await handleLogout();
-
           onClose();
-
         }}
-
       />
-
     );
-
   }
 
-
   /*
-   * =====================================================
-   * LOGIN
-   * =====================================================
+   * FORMULARIO DE INICIO DE SESIÓN
    */
-
   return (
-
     <div className="login-overlay">
-
-
       <div className="login-modal">
-
-
-        {/* =================================================
-            BOTÓN CERRAR
-            ================================================= */}
-
         <button
           className="login-close"
           onClick={onClose}
           aria-label="Cerrar"
           type="button"
         >
-
           ×
-
         </button>
 
-
-        {/* =================================================
-            ENCABEZADO
-            ================================================= */}
-
         <div className="login-header">
-
-
           <img
             src="/logo-conecta-tel.png"
             alt="CONECTA-TEL"
           />
 
-
-          <h2>
-            Bienvenido
-          </h2>
-
+          <h2>Bienvenido</h2>
 
           <p>
             Ingresa a la plataforma de egresados.
           </p>
-
-
         </div>
-
-
-        {/* =================================================
-            FORMULARIO
-            ================================================= */}
 
         <form
           onSubmit={handleLogin}
           className="login-form"
         >
-
-
-          {/* =================================================
-              CORREO
-              ================================================= */}
-
           <label htmlFor="email">
-
-            Correo electrónico
-
+            Correo de administrador o código de egresado
           </label>
-
 
           <input
             id="email"
-            type="email"
+            type="text"
             value={email}
             onChange={(e) => {
-
-              setEmail(
-                e.target.value
-              );
-
+              setEmail(e.target.value);
               setError("");
-
             }}
-            placeholder="Correo electrónico"
-            autoComplete="email"
+            placeholder="Correo o código de acceso"
+            autoComplete="username"
             required
           />
 
-
-          {/* =================================================
-              CONTRASEÑA
-              ================================================= */}
-
           <label htmlFor="password">
-
             Contraseña
-
           </label>
-
 
           <input
             id="password"
             type="password"
             value={password}
             onChange={(e) => {
-
-              setPassword(
-                e.target.value
-              );
-
+              setPassword(e.target.value);
               setError("");
-
             }}
             placeholder="Contraseña"
             autoComplete="current-password"
             required
           />
 
-
-          {/* =================================================
-              ERROR
-              ================================================= */}
-
           {error && (
-
-            <p
-              className="login-error"
-              role="alert"
-            >
-
+            <p className="login-error" role="alert">
               {error}
-
             </p>
-
           )}
-
-
-          {/* =================================================
-              BOTÓN INICIAR SESIÓN
-              ================================================= */}
 
           <button
             type="submit"
             className="login-submit"
             disabled={loading}
           >
-
             {loading
               ? "Ingresando..."
               : "Iniciar sesión"}
-
           </button>
-
-
         </form>
-
-
       </div>
-
-
     </div>
-
   );
-
 }
-
 
 export default Login;

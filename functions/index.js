@@ -1,3 +1,4 @@
+
 const {setGlobalOptions} = require("firebase-functions");
 const {onRequest} = require("firebase-functions/v2/https");
 const {GoogleGenAI, Type} = require("@google/genai");
@@ -5,6 +6,98 @@ const logger = require("firebase-functions/logger");
 const {initializeApp} = require("firebase-admin/app");
 const {getFirestore} = require("firebase-admin/firestore");
 const {getAuth} = require("firebase-admin/auth");
+const crypto = require("crypto");
+const {defineSecret} = require("firebase-functions/params");
+
+const credencialesEncryptionKey = defineSecret(
+    "CREDENCIALES_ENCRYPTION_KEY",
+);
+
+
+/**
+ * Cifra una credencial usando AES-256-GCM.
+ * @param {string} texto Texto que se va a cifrar.
+ * @return {{iv: string, tag: string, valor: string}} Datos cifrados.
+ */
+function cifrarCredencial(texto) {
+  const clave = Buffer.from(
+      credencialesEncryptionKey.value(),
+      "hex",
+  );
+
+  if (clave.length !== 32) {
+    throw new Error("La clave de cifrado debe tener 32 bytes.");
+  }
+
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv(
+      "aes-256-gcm",
+      clave,
+      iv,
+  );
+
+  const cifrado = Buffer.concat([
+    cipher.update(texto, "utf8"),
+    cipher.final(),
+  ]);
+
+  return {
+    iv: iv.toString("hex"),
+    tag: cipher.getAuthTag().toString("hex"),
+    valor: cifrado.toString("hex"),
+  };
+}
+
+/**
+ * Descifra una credencial previamente cifrada.
+ * @param {{iv: string, tag: string, valor: string}} datos Datos cifrados.
+ * @return {string} Texto original.
+ */
+function descifrarCredencial(datos) {
+  const clave = Buffer.from(
+      credencialesEncryptionKey.value(),
+      "hex",
+  );
+
+  if (clave.length !== 32) {
+    throw new Error("La clave de cifrado debe tener 32 bytes.");
+  }
+
+  const decipher = crypto.createDecipheriv(
+      "aes-256-gcm",
+      clave,
+      Buffer.from(datos.iv, "hex"),
+  );
+
+  decipher.setAuthTag(Buffer.from(datos.tag, "hex"));
+
+  const texto = Buffer.concat([
+    decipher.update(Buffer.from(datos.valor, "hex")),
+    decipher.final(),
+  ]);
+
+  return texto.toString("utf8");
+}
+
+
+/**
+ * Construye el correo interno de Firebase a partir del código de acceso.
+ * @param {string} codigo Código de acceso del egresado.
+ * @return {string} Correo interno asociado al código.
+ */
+function correoInternoPorCodigo(codigo) {
+  const normalizado = String(codigo || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+
+  if (!normalizado) {
+    throw new Error("Código de acceso inválido.");
+  }
+
+  return `ct-${normalizado}@conecta-tel.firebaseapp.com`;
+}
+
 
 initializeApp();
 
@@ -217,6 +310,7 @@ exports.testFirestoreGemini = onRequest(
     // --------------------------------------------------
     // 1. CONFIGURACIÓN CORS
     // --------------------------------------------------
+
       const origin = req.headers.origin;
 
       if (origin === "http://localhost:5173") {
@@ -580,6 +674,493 @@ ${JSON.stringify(perfilParaIA, null, 2)}
         return res.status(500).json({
           success: false,
           message: "No fue posible completar la clasificación con IA.",
+        });
+      }
+    },
+);
+
+/**
+ * CONECTA-TEL: generación de credenciales de egresados.
+ * Las credenciales temporales se devuelven una sola vez
+ * y nunca se guardan en Firestore en texto plano.
+ */
+
+
+exports.generarCredencialesEgresados = onRequest(
+    {
+      cors: true,
+      secrets: [credencialesEncryptionKey],
+    },
+    async (req, res) => {
+      try {
+        if (req.method !== "POST") {
+          return res.status(405).json({
+            success: false,
+            message: "Utiliza el método POST.",
+          });
+        }
+
+        const authorization = req.get("Authorization") || "";
+        const match = authorization.match(/^Bearer (.+)$/);
+
+        if (!match) {
+          return res.status(401).json({
+            success: false,
+            message: "Debes iniciar sesión.",
+          });
+        }
+
+        const token = await getAuth().verifyIdToken(match[1], true);
+        const adminSnap = await db
+            .collection("administradores")
+            .doc(token.uid)
+            .get();
+
+        if (!adminSnap.exists) {
+          return res.status(403).json({
+            success: false,
+            message: "Operación exclusiva de administradores.",
+          });
+        }
+
+        const ids = req.body && req.body.egresadoIds;
+
+        if (
+          !Array.isArray(ids) ||
+          ids.length < 1 ||
+          ids.length > 20 ||
+          ids.some((id) => typeof id !== "string" || !id.trim())
+        ) {
+          return res.status(400).json({
+            success: false,
+            message: "Envía entre 1 y 20 IDs válidos.",
+          });
+        }
+
+        const resultados = [];
+        const auth = getAuth();
+
+        for (const id of [...new Set(ids)]) {
+          try {
+            const egresadoRef = db.collection("egresados").doc(id);
+            const egresadoSnap = await egresadoRef.get();
+
+            if (!egresadoSnap.exists) {
+              resultados.push({
+                egresadoId: id,
+                success: false,
+                message: "Egresado no encontrado.",
+              });
+              continue;
+            }
+
+            const datos = egresadoSnap.data();
+
+            // Recuperar la cuenta existente sin crear otro usuario.
+            if (datos.uid) {
+              const accesoRef = db
+                  .collection("credencialesAcceso")
+                  .doc(datos.uid);
+              const accesoSnap = await accesoRef.get();
+              const acceso = accesoSnap.exists ?
+                accesoSnap.data() :
+                {};
+
+              // Si ya hay credenciales pendientes, mostrar las mismas.
+              if (
+                acceso.passwordTemporalCifrada &&
+                acceso.estado === "pendienteCambioPassword" &&
+                !acceso.cambioCompletadoEn
+              ) {
+                const codigoGuardado =
+                    acceso.codigoAcceso || datos.codigoAcceso;
+
+                if (!codigoGuardado) {
+                  throw new Error("El egresado no tiene código de acceso.");
+                }
+
+                const usuarioExistente = await auth.getUser(datos.uid);
+                const correoCorrecto = correoInternoPorCodigo(codigoGuardado);
+
+                if (usuarioExistente.email !== correoCorrecto) {
+                  await auth.updateUser(datos.uid, {
+                    email: correoCorrecto,
+                  });
+                }
+
+                if (!codigoGuardado) {
+                  throw new Error("El egresado no tiene código de acceso.");
+                }
+
+                resultados.push({
+                  egresadoId: id,
+                  success: true,
+                  yaExiste: true,
+                  codigoAcceso: codigoGuardado,
+                  contrasenaTemporal: descifrarCredencial(
+                      acceso.passwordTemporalCifrada,
+                  ),
+                });
+
+                continue;
+              }
+
+              // Nunca recuperar ni regenerar una contraseña ya utilizada.
+              if (acceso.cambioCompletadoEn) {
+                resultados.push({
+                  egresadoId: id,
+                  success: false,
+                  yaExiste: true,
+                  message:
+                    "El egresado ya cambió su contraseña. " +
+                    "No se mostrarán credenciales temporales.",
+                });
+                continue;
+              }
+
+              // Recuperación inicial: solo si no hay contraseña cifrada.
+              let codigo = datos.codigoAcceso || acceso.codigoAcceso;
+
+              if (!codigo) {
+                const contadorRef = db
+                    .collection("configuracion")
+                    .doc("contadorCredenciales");
+
+                codigo = await db.runTransaction(async (tx) => {
+                  const contadorSnap = await tx.get(contadorRef);
+                  const egresadoActual = await tx.get(egresadoRef);
+
+                  if (!egresadoActual.exists) {
+                    throw new Error("Egresado no encontrado.");
+                  }
+
+                  const codigoActual =
+                    egresadoActual.data().codigoAcceso;
+
+                  if (codigoActual) {
+                    return codigoActual;
+                  }
+
+                  const siguiente = contadorSnap.exists ?
+                    Number(contadorSnap.data().ultimoNumero || 0) + 1 :
+                    1;
+
+                  const nuevoCodigo = `E-${siguiente}`;
+
+                  tx.set(contadorRef, {
+                    ultimoNumero: siguiente,
+                    actualizadoEn: new Date().toISOString(),
+                  });
+
+                  tx.update(egresadoRef, {
+                    codigoAcceso: nuevoCodigo,
+                  });
+
+                  return nuevoCodigo;
+                });
+              }
+
+              const usuarioExistente = await auth.getUser(datos.uid);
+
+              if (
+                !usuarioExistente.customClaims ||
+                usuarioExistente.customClaims.conectaTelRole !== "egresado"
+              ) {
+                resultados.push({
+                  egresadoId: id,
+                  success: false,
+                  message:
+                    "No se pudo verificar que la cuenta sea de un egresado.",
+                });
+                continue;
+              }
+
+              // Crear la contraseña de recuperación una sola vez.
+              const temporal =
+                `${crypto.randomBytes(18).toString("hex")}Aa1!`;
+              const passwordTemporalCifrada =
+                cifrarCredencial(temporal);
+
+              // Guardar primero la credencial cifrada.
+              await accesoRef.set({
+                egresadoId: id,
+                codigoAcceso: codigo,
+                passwordTemporalCifrada,
+                estado: "pendienteCambioPassword",
+                actualizadoPor: token.uid,
+                creadoEn: new Date().toISOString(),
+              });
+
+              // Actualizar la cuenta existente; no crear otra.
+              await auth.updateUser(datos.uid, {
+                password: temporal,
+              });
+
+              await auth.setCustomUserClaims(datos.uid, {
+                ...(usuarioExistente.customClaims || {}),
+                conectaTelRole: "egresado",
+                mustChangePassword: true,
+              });
+
+              await egresadoRef.update({
+                codigoAcceso: codigo,
+              });
+
+              resultados.push({
+                egresadoId: id,
+                success: true,
+                yaExiste: true,
+                codigoAcceso: codigo,
+                contrasenaTemporal: temporal,
+              });
+
+              continue;
+            }
+
+
+            // Reutilizar un código reservado si hubo un intento anterior.
+            let codigo = datos.codigoAcceso;
+
+            if (!codigo) {
+              const contadorRef = db
+                  .collection("configuracion")
+                  .doc("contadorCredenciales");
+
+              codigo = await db.runTransaction(async (tx) => {
+                const actual = await tx.get(contadorRef);
+                const egresadoActual = await tx.get(egresadoRef);
+
+                if (!egresadoActual.exists) {
+                  throw new Error("Egresado no encontrado.");
+                }
+
+                const codigoExistente =
+                  egresadoActual.data().codigoAcceso;
+
+                if (codigoExistente) {
+                  return codigoExistente;
+                }
+
+                const siguiente = actual.exists ?
+                  Number(actual.data().ultimoNumero || 0) + 1 :
+                  1;
+
+                const nuevoCodigo = `E-${siguiente}`;
+
+                tx.set(contadorRef, {
+                  ultimoNumero: siguiente,
+                  actualizadoEn: new Date().toISOString(),
+                });
+
+                tx.update(egresadoRef, {
+                  codigoAcceso: nuevoCodigo,
+                });
+
+                return nuevoCodigo;
+              });
+            }
+
+            const correoInterno = correoInternoPorCodigo(codigo);
+
+            const temporal =
+              `${crypto.randomBytes(18).toString("hex")}Aa1!`;
+
+            // Si el usuario se creó en un intento previo, reutilizarlo.
+            let usuario;
+
+            try {
+              usuario = await auth.getUserByEmail(correoInterno);
+              usuario = await auth.updateUser(usuario.uid, {
+                password: temporal,
+                emailVerified: false,
+              });
+            } catch (error) {
+              if (error.code !== "auth/user-not-found") {
+                throw error;
+              }
+
+              usuario = await auth.createUser({
+                email: correoInterno,
+                password: temporal,
+                emailVerified: false,
+              });
+            }
+
+            const usuarioActualizado = await auth.getUser(usuario.uid);
+
+            await auth.setCustomUserClaims(usuario.uid, {
+              ...(usuarioActualizado.customClaims || {}),
+              conectaTelRole: "egresado",
+              mustChangePassword: true,
+            });
+
+            const passwordTemporalCifrada =
+              cifrarCredencial(temporal);
+
+            await db.collection("credencialesAcceso")
+                .doc(usuario.uid)
+                .set({
+                  egresadoId: id,
+                  codigoAcceso: codigo,
+                  passwordTemporalCifrada,
+                  estado: "pendienteCambioPassword",
+                  actualizadoPor: token.uid,
+                  creadoEn: new Date().toISOString(),
+                });
+
+            await egresadoRef.update({
+              uid: usuario.uid,
+              codigoAcceso: codigo,
+            });
+
+            resultados.push({
+              egresadoId: id,
+              success: true,
+              codigoAcceso: codigo,
+              contrasenaTemporal: temporal,
+            });
+          } catch (error) {
+            logger.error("Error al generar credencial.", {
+              egresadoId: id,
+              code: error.code || "unknown",
+            });
+
+            resultados.push({
+              egresadoId: id,
+              success: false,
+              message:
+                "No fue posible completar la operación. " +
+                "Verifica el estado de la cuenta antes de reintentar.",
+            });
+          }
+        }
+
+        return res.status(200).json({
+          success: true,
+          resultados,
+          advertencia:
+            "La contraseña temporal solo se recupera mientras " +
+            "el egresado no haya completado el cambio obligatorio.",
+        });
+      } catch (error) {
+        logger.error("Error en generación de credenciales.", {
+          code: error.code || "unknown",
+        });
+
+        return res.status(500).json({
+          success: false,
+          message: "No fue posible generar las credenciales.",
+        });
+      }
+    },
+);
+
+
+/**
+ * Confirma que la contraseña temporal fue cambiada.
+ * El frontend debe actualizar primero la contraseña en Firebase Auth.
+ */
+
+exports.completarCambioPassword = onRequest(
+    {cors: true},
+    async (req, res) => {
+      try {
+        if (req.method !== "POST") {
+          return res.status(405).json({
+            success: false,
+            message: "Utiliza el método POST.",
+          });
+        }
+
+        const authorization = req.get("Authorization") || "";
+        const match = authorization.match(/^Bearer (.+)$/);
+
+        if (!match) {
+          return res.status(401).json({
+            success: false,
+            message: "Debes iniciar sesión.",
+          });
+        }
+
+        const token = await getAuth().verifyIdToken(match[1], true);
+
+        if (token.mustChangePassword !== true) {
+          return res.status(400).json({
+            success: false,
+            message: "No hay un cambio obligatorio pendiente.",
+          });
+        }
+
+        const nuevaPassword = req.body && req.body.nuevaPassword;
+
+        if (
+          typeof nuevaPassword !== "string" ||
+          nuevaPassword.length < 8 ||
+          nuevaPassword.length > 128
+        ) {
+          return res.status(400).json({
+            success: false,
+            message: "La contraseña debe tener entre 8 y 128 caracteres.",
+          });
+        }
+
+        const auth = getAuth();
+        const usuario = await auth.getUser(token.uid);
+
+        const accesoRef = db
+            .collection("credencialesAcceso")
+            .doc(token.uid);
+
+        const accesoSnap = await accesoRef.get();
+
+        if (!accesoSnap.exists) {
+          return res.status(403).json({
+            success: false,
+            message: "No se encontró el registro de acceso.",
+          });
+        }
+
+        // Cambiar la contraseña directamente en Firebase Auth.
+        await auth.updateUser(token.uid, {
+          password: nuevaPassword,
+        });
+
+        // Retirar la marca que obliga al cambio de contraseña.
+        const claims = {...(usuario.customClaims || {})};
+        delete claims.mustChangePassword;
+
+        await auth.setCustomUserClaims(token.uid, claims);
+
+        await accesoRef.update({
+          cambioCompletadoEn: new Date().toISOString(),
+        });
+
+        logger.info("Cambio de contraseña completado.", {
+          uid: token.uid,
+        });
+
+        return res.status(200).json({
+          success: true,
+          message: "Contraseña actualizada correctamente.",
+        });
+      } catch (error) {
+        logger.error("Error al completar cambio de contraseña.", {
+          code: error.code || "unknown",
+        });
+
+        if (
+          error.code === "auth/invalid-password" ||
+          error.code === "auth/weak-password"
+        ) {
+          return res.status(400).json({
+            success: false,
+            message: "La contraseña no cumple los requisitos de Firebase.",
+          });
+        }
+
+        return res.status(500).json({
+          success: false,
+          message: "No fue posible completar el cambio de contraseña.",
         });
       }
     },

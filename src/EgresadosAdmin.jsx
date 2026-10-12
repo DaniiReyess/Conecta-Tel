@@ -11,6 +11,7 @@ import {
 
 import { auth, db } from "./firebase";
 
+
 import "./EgresadosAdmin.css";
 
 
@@ -22,9 +23,17 @@ function EgresadosAdmin() {
 
   const [egresados, setEgresados] = useState([]);
 
+  const [filtroPiloto, setFiltroPiloto] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState("");
+
+  const [generandoId, setGenerandoId] = useState("");
+
+  const [credencialesGeneradas, setCredencialesGeneradas] = useState(null);
+
+  const [errorCredenciales, setErrorCredenciales] = useState("");
 
   const [busqueda, setBusqueda] = useState("");
 
@@ -252,7 +261,7 @@ function EgresadosAdmin() {
 
     return egresados.filter(
       (egresado) => {
-
+        if (filtroPiloto && egresado.esPiloto !== true) return false;
         const nombreCompleto =
           `${egresado.nombres || ""} ${egresado.apellidos || ""}`
             .toLowerCase();
@@ -314,7 +323,8 @@ function EgresadosAdmin() {
     egresados,
     busqueda,
     ciudadFiltro,
-    formacionFiltro
+    formacionFiltro,
+    filtroPiloto
   ]);
 
 
@@ -441,7 +451,130 @@ function EgresadosAdmin() {
 
   };
 
+  
+  // =====================================================
+  // GENERAR CREDENCIALES DE ACCESO
+  // =====================================================
+  const generarCredenciales = async (egresado) => {
+    if (!egresado?.id) {
+      setErrorCredenciales("No se encontró el ID del egresado.");
+      return;
+    }
+
+    const confirmado = window.confirm(
+      `¿Generar un código de acceso y una contraseña temporal para ${obtenerNombre(egresado)}?`
+    );
+
+    if (!confirmado) return;
+
+    try {
+      setGenerandoId(egresado.id);
+      setErrorCredenciales("");
+      setCredencialesGeneradas(null);
+
+      const usuario = auth.currentUser;
+
+      if (!usuario) {
+        throw new Error("La sesión del administrador ha expirado.");
+      }
+
+      const token = await usuario.getIdToken();
+
+      const response = await fetch(
+        "https://us-central1-conecta-tel.cloudfunctions.net/generarCredencialesEgresados",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            egresadoIds: [egresado.id],
+          }),
+        }
+      );
+
+      const resultado = await response.json();
+
+      if (!response.ok || !resultado.success) {
+        throw new Error(
+          resultado.message || "No fue posible generar las credenciales."
+        );
+      }
+
+      const credencial = resultado.resultados?.find(
+        (item) => item.egresadoId === egresado.id && item.success
+      );
+
+      if (!credencial) {
+        const fallo = resultado.resultados?.find(
+          (item) => item.egresadoId === egresado.id
+        );
+
+        throw new Error(
+          fallo?.message || "No se generaron las credenciales."
+        );
+      }
+
+      setCredencialesGeneradas({
+        nombre: obtenerNombre(egresado),
+        codigoAcceso: credencial.codigoAcceso,
+        contrasenaTemporal: credencial.contrasenaTemporal,
+      });
+    } catch (error) {
+      console.error("Error generando credenciales:", error);
+      setErrorCredenciales(
+        error.message || "No fue posible generar las credenciales."
+      );
+    } finally {
+      setGenerandoId("");
+    }
+  };
+
+
   // ======================================================
+  // =====================================================
+  // ABRIR WHATSAPP CON LAS CREDENCIALES DEL EGRESADO
+  // Prepara el mensaje para revisión y envío manual.
+  // =====================================================
+  const abrirWhatsAppCredenciales = () => {
+    if (!credencialesGeneradas) return;
+
+    const telefonoIngresado = window.prompt(
+      "Escribe el número de WhatsApp del destinatario. Para Colombia puedes escribir los 10 dígitos del celular o incluir el indicativo 57. Usa únicamente un número de prueba bajo tu control."
+    );
+
+    if (!telefonoIngresado) return;
+
+    let telefono = telefonoIngresado.replace(/\D/g, "");
+
+    if (telefono.length === 10) {
+      telefono = `57${telefono}`;
+    }
+
+    if (telefono.length < 11 || telefono.length > 15) {
+      window.alert("Verifica el número. Incluye el indicativo del país si es necesario.");
+      return;
+    }
+
+    const mensaje =
+      `Hola. Te saludamos desde la Facultad de Ingeniería de Telecomunicaciones de la Universidad Santo Tomás, seccional Bucaramanga.\n\n` +
+      `Estamos realizando la prueba piloto académica de CONECTA-TEL, una plataforma diseñada para mantener actualizada la información profesional de nuestros egresados.\n\n` +
+      `Te invitamos a ingresar y completar o actualizar tu perfil:\n\n` +
+      `PLATAFORMA: https://conecta-tel.web.app\n\n` +
+      `CODIGO DE ACCESO: ${credencialesGeneradas.codigoAcceso}\n` +
+      `CONTRASENA TEMPORAL: ${credencialesGeneradas.contrasenaTemporal}\n\n` +
+      `En tu primer ingreso, el sistema te solicitara cambiar la contrasena temporal por una personal. Despues podras acceder a tu perfil y actualizar tus datos profesionales.\n\n` +
+      `Por favor, conserva tus credenciales de forma privada y no las compartas con otras personas.\n\n` +
+      `Si tienes alguna dificultad para ingresar o utilizar la plataforma, no dudes en contactarnos. Estaremos atentos para brindarte el apoyo que necesites.\n\n` +
+      `¡Gracias por participar en esta iniciativa academica y ayudarnos a fortalecer CONECTA-TEL!\n\n` +
+      `Desarrolladora del proyecto: Daniela Alejandra Reyes`;
+
+    const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+
   // CARGAR CLASIFICACIÓN IA DESDE FIRESTORE
   // ======================================================
 
@@ -1406,6 +1539,17 @@ function EgresadosAdmin() {
 
         <div className="egresados-admin-filters">
 
+          
+          <div className="egresados-filter">
+            <span>GRUPO</span>
+            <select
+              value={filtroPiloto ? "piloto" : "todos"}
+              onChange={(e) => setFiltroPiloto(e.target.value === "piloto")}
+            >
+              <option value="todos">Todos los egresados</option>
+              <option value="piloto">Piloto (14 participantes)</option>
+            </select>
+          </div>
 
           {/* BUSCAR */}
 
@@ -1693,29 +1837,38 @@ function EgresadosAdmin() {
                             "No registrado"}
 
                         </td>
+                       
+                        {/* ACCIONES */}
 
+                        <td className="egresados-acciones-col">
 
-                        {/* ACCIÓN */}
+                          <div className="egresados-acciones">
 
-                        <td>
+                            <button
+                              type="button"
+                              className="egresado-view-button"
+                              onClick={() => abrirPerfil(egresado)}
+                            >
+                              Ver perfil →
+                            </button>
 
-                          <button
-                            type="button"
-                            className="egresado-view-button"
-                            onClick={() =>
-                              abrirPerfil(
-                                egresado
-                              )
-                            }
-                          >
+                            <button
+                              type="button"
+                              className="egresado-access-button"
+                              onClick={() => generarCredenciales(egresado)}
+                              disabled={generandoId === egresado.id}
+                            >
+                              {generandoId === egresado.id
+                                ? "Generando..."
+                                : "Generar acceso"}
+                            </button>
 
-                            Ver perfil →
-
-                          </button>
+                          </div>
 
                         </td>
 
                       </tr>
+
 
                     )
                   )
@@ -1742,6 +1895,175 @@ function EgresadosAdmin() {
           ================================================= */}
 
       {renderPerfil()}
+
+      
+
+      {errorCredenciales && (
+        <div className="credenciales-error-overlay" role="alert">
+          <p>{errorCredenciales}</p>
+
+          <button
+            type="button"
+            className="credenciales-boton credenciales-boton-secundario"
+            onClick={() => setErrorCredenciales("")}
+          >
+            Cerrar
+          </button>
+        </div>
+      )}
+
+      {credencialesGeneradas && createPortal(
+        <div
+          className="credenciales-overlay"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setCredencialesGeneradas(null);
+            }
+          }}
+        >
+          <div
+            className="credenciales-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="credenciales-titulo"
+            aria-describedby="credenciales-descripcion"
+          >
+            <span className="credenciales-etiqueta">
+              CONECTA-TEL · GESTIÓN DE ACCESOS
+            </span>
+
+            <h2 id="credenciales-titulo">
+              Credenciales generadas
+            </h2>
+
+            <p
+              id="credenciales-descripcion"
+              className="credenciales-descripcion"
+            >
+              El acceso está listo. Guarda las credenciales y entrégalas
+              al egresado por un canal seguro.
+            </p>
+
+            <div className="credenciales-egresado">
+              <span>EGRESADO</span>
+              <strong>{credencialesGeneradas.nombre}</strong>
+            </div>
+
+            <div className="credenciales-campo">
+              <label htmlFor="codigoAccesoGenerado">
+                CÓDIGO DE ACCESO
+              </label>
+
+              <div className="credenciales-input-contenedor">
+                <input
+                  id="codigoAccesoGenerado"
+                  className="credenciales-input"
+                  readOnly
+                  value={credencialesGeneradas.codigoAcceso}
+                  onFocus={(event) => event.target.select()}
+                />
+
+                <button
+                  type="button"
+                  className="credenciales-boton-copiar-campo"
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      credencialesGeneradas.codigoAcceso
+                    ).then(
+                      () => window.alert("Código copiado."),
+                      () => window.alert("No fue posible copiarlo. Selecciona el código manualmente.")
+                    )
+                  }
+                >
+                  Copiar código
+                </button>
+              </div>
+            </div>
+
+            <div className="credenciales-campo">
+              <label htmlFor="contrasenaTemporalGenerada">
+                CONTRASEÑA TEMPORAL
+              </label>
+
+              <div className="credenciales-input-contenedor">
+                <input
+                  id="contrasenaTemporalGenerada"
+                  className="credenciales-input"
+                  readOnly
+                  value={credencialesGeneradas.contrasenaTemporal}
+                  onFocus={(event) => event.target.select()}
+                />
+
+                <button
+                  type="button"
+                  className="credenciales-boton-copiar-campo"
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      credencialesGeneradas.contrasenaTemporal
+                    ).then(
+                      () => window.alert("Contraseña temporal copiada."),
+                      () => window.alert("No fue posible copiarla. Selecciona la contraseña manualmente.")
+                    )
+                  }
+                >
+                  Copiar contraseña
+                </button>
+              </div>
+            </div>
+
+            <div className="credenciales-aviso">
+              <span aria-hidden="true">⚠</span>
+              <span>
+                La contraseña es temporal. El egresado debe cambiarla al
+                ingresar por primera vez. Cierra esta ventana únicamente
+                después de guardar las credenciales.
+              </span>
+            </div>
+
+            <div className="credenciales-acciones">
+              <button
+                type="button"
+                className="credenciales-boton credenciales-boton-secundario"
+                onClick={() => setCredencialesGeneradas(null)}
+              >
+                Cerrar
+              </button>
+
+              <button
+                type="button"
+                className="credenciales-boton credenciales-boton-secundario"
+                onClick={abrirWhatsAppCredenciales}
+              >
+                Preparar mensaje en WhatsApp
+              </button>
+
+              <button
+                type="button"
+                className="credenciales-boton credenciales-boton-principal"
+                onClick={() => {
+                  const texto =
+                    `CONECTA-TEL\n` +
+                    `Egresado: ${credencialesGeneradas.nombre}\n` +
+                    `Código: ${credencialesGeneradas.codigoAcceso}\n` +
+                    `Contraseña temporal: ${credencialesGeneradas.contrasenaTemporal}`;
+
+                  navigator.clipboard.writeText(texto)
+                    .then(() => window.alert("Credenciales copiadas correctamente."))
+                    .catch(() => window.alert(
+                      "No fue posible copiar automáticamente. Selecciona y copia los datos manualmente."
+                    ));
+                }}
+              >
+                Copiar todas las credenciales
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+
 
     </>
 
