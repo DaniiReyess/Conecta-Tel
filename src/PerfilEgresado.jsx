@@ -2,6 +2,33 @@ import { useEffect, useState } from "react";
 import EditarPerfil from "./EditarPerfil";
 import "./PerfilEgresado.css";
 
+function formatearFecha(fecha) {
+  if (!fecha) return "No registrada";
+
+  if (typeof fecha?.toDate === "function") {
+    return fecha.toDate().toLocaleDateString("es-CO");
+  }
+
+  if (
+    typeof fecha === "object" &&
+    typeof fecha.seconds === "number"
+  ) {
+    return new Date(fecha.seconds * 1000).toLocaleDateString("es-CO");
+  }
+
+  if (typeof fecha === "string") {
+    const fechaValida = new Date(fecha);
+
+    if (!Number.isNaN(fechaValida.getTime())) {
+      return fechaValida.toLocaleDateString("es-CO");
+    }
+
+    return fecha;
+  }
+
+  return "No registrada";
+}
+
 function PerfilEgresado({
   egresado,
   onLogout,
@@ -197,7 +224,7 @@ function PerfilEgresado({
                 </small>
 
                 <strong>
-                  {egresado.fechaGrado || "No registrada"}
+                  {formatearFecha(egresado.fechaGrado)}
                 </strong>
 
               </div>

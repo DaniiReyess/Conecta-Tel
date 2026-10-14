@@ -489,29 +489,62 @@ function DashboardAdmin() {
   const graduaciones = useMemo(() => {
     const conteo = {};
 
-    datos.egresados.forEach((egresado) => {
-      const valor = egresado.fechaGrado;
-      let anio = "";
+    // Normaliza fechas habituales de Firestore/formularios a un año válido.
+    const obtenerAnioGrado = (valor) => {
+      if (valor == null || valor === "") return "";
 
-      if (valor?.toDate instanceof Function) {
-        anio = String(valor.toDate().getFullYear());
+      let fecha = null;
+
+      if (typeof valor?.toDate === "function") {
+        fecha = valor.toDate();
+      } else if (valor instanceof Date) {
+        fecha = valor;
+      } else if (typeof valor === "number") {
+        // Acepta timestamps Unix en milisegundos.
+        fecha = new Date(valor);
       } else if (typeof valor === "string") {
-        const encontrado = valor.match(/(?:19|20)\\d{2}/);
-        if (encontrado) anio = encontrado[0];
-      } else if (valor instanceof Date && !Number.isNaN(valor.getTime())) {
-        anio = String(valor.getFullYear());
+        const texto = valor.trim();
+
+        // Para fechas ISO o formatos que comienzan con año (YYYY-MM-DD).
+        const iso = texto.match(/^(19|20)\d{2}(?=$|[-/T ])/);
+        if (iso) return iso[0];
+
+        // Para fechas tipo DD/MM/YYYY o DD-MM-YYYY.
+        const diaMesAnio = texto.match(/^\d{1,2}[/-]\d{1,2}[/-]((?:19|20)\d{2})$/);
+        if (diaMesAnio) return diaMesAnio[1];
+
+        // Acepta otros textos que contengan un año de cuatro dígitos.
+        const encontrado = texto.match(/(?:19|20)\d{2}/);
+        return encontrado ? encontrado[0] : "";
+      } else if (typeof valor === "object") {
+        // Algunos formularios guardan la fecha como {seconds: ...} o {year: ...}.
+        if (Number.isInteger(valor.year) && valor.year >= 1900 && valor.year <= 2099) {
+          return String(valor.year);
+        }
+        if (Number.isFinite(valor.seconds)) {
+          fecha = new Date(valor.seconds * 1000);
+        } else if (Number.isFinite(valor._seconds)) {
+          fecha = new Date(valor._seconds * 1000);
+        }
       }
 
+      if (fecha instanceof Date && !Number.isNaN(fecha.getTime())) {
+        const anio = fecha.getFullYear();
+        if (anio >= 1900 && anio <= 2099) return String(anio);
+      }
+
+      return "";
+    };
+
+    datos.egresados.forEach((egresado) => {
+      const anio = obtenerAnioGrado(egresado.fechaGrado);
       if (anio) {
         conteo[anio] = (conteo[anio] || 0) + 1;
       }
     });
 
     return Object.entries(conteo)
-      .map(([anio, cantidad]) => ({
-        anio,
-        cantidad,
-      }))
+      .map(([anio, cantidad]) => ({ anio, cantidad }))
       .sort((a, b) => Number(a.anio) - Number(b.anio));
   }, [datos]);
 
